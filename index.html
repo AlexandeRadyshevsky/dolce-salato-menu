@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Primary meta -->
+    <title>%TITLE%</title>
+    <meta name="description" content="%DESCRIPTION%" />
+    <meta name="keywords" content="%KEYWORDS%" />
+    <link rel="canonical" href="%URL%" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta name="theme-color" content="#15241B" />
+
+    <!-- Яндекс.Вебмастер: вставьте код подтверждения прав -->
+    <meta name="yandex-verification" content="%YANDEX%" />
+
+    <!-- Open Graph (Я.Дзен, соцсети, мессенджеры) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Dolce&Salato" />
+    <meta property="og:title" content="%TITLE%" />
+    <meta property="og:description" content="%DESCRIPTION%" />
+    <meta property="og:url" content="%URL%" />
+    <meta property="og:locale" content="ru_RU" />
+    <meta property="og:image" content="%URL%images/og-cover.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+
+    <!-- Twitter / X -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="%TITLE%" />
+    <meta name="twitter:description" content="%DESCRIPTION%" />
+    <meta name="twitter:image" content="%URL%images/og-cover.jpg" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- %STRUCTURED_DATA% -->
+  </head>
+  <body>
+    <div id="root"><!-- %SEO_FALLBACK% --></div>
+    <!-- Восстановление ЧПУ-маршрута после 404-фолбэка GitHub Pages -->
+    <script>
+      (function () {
+        var r = sessionStorage.getItem('ds-redirect');
+        if (r) {
+          sessionStorage.removeItem('ds-redirect');
+          history.replaceState(null, '', r);
+        }
+      })();
+    </script>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

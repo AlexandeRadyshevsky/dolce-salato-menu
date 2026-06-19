@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <title>404 — страница не найдена · Dolce&Salato</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=EB+Garamond:ital,wght@0,400;0,500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --green-900: #15241b;
+        --green-600: #3b5a45;
+        --green-400: #7e9580;
+        --green-300: #a9bcab;
+        --cream: #f2ecdd;
+        --gold: #c8922e;
+        --gold-soft: #d9a441;
+        --ease: cubic-bezier(0.22, 1, 0.36, 1);
+      }
+      * { box-sizing: border-box; }
+      html, body { height: 100%; margin: 0; }
+      body {
+        background: radial-gradient(120% 120% at 50% 30%, #1d3325 0%, var(--green-900) 70%);
+        color: var(--cream);
+        font-family: 'EB Garamond', Georgia, serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: clamp(40px, 8vw, 90px) clamp(24px, 6vw, 80px);
+        -webkit-font-smoothing: antialiased;
+      }
+      .nf-fork { color: var(--gold-soft); opacity: 0.9; margin-bottom: 24px; }
+      .nf-code {
+        font-family: 'Cormorant Garamond', serif;
+        font-weight: 500;
+        font-size: clamp(5.5rem, 18vw, 12rem);
+        line-height: 0.9;
+        letter-spacing: -0.02em;
+        margin: 0;
+      }
+      .nf-code .amp { color: var(--gold-soft); font-style: italic; }
+      h1 {
+        font-family: 'Cormorant Garamond', serif;
+        font-weight: 500;
+        font-size: clamp(1.6rem, 3.5vw, 2.6rem);
+        margin: 14px 0 2px;
+      }
+      .nf-it {
+        font-family: 'Cormorant Garamond', serif;
+        font-style: italic;
+        color: var(--gold-soft);
+        font-size: clamp(1rem, 2vw, 1.3rem);
+        letter-spacing: 0.04em;
+        margin-bottom: 18px;
+      }
+      p.lead { color: var(--green-300); font-size: 1.08rem; line-height: 1.6; max-width: 44ch; margin: 0 0 32px; }
+      .actions { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+      .home, .ghost {
+        font-family: 'EB Garamond', serif;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 1.05rem;
+        padding: 15px 30px;
+        border-radius: 2px;
+        text-decoration: none;
+        cursor: pointer;
+        transition: background 0.25s var(--ease), transform 0.25s var(--ease), border-color 0.25s var(--ease), color 0.25s var(--ease);
+      }
+      .home { background: var(--gold); color: var(--green-900); border: none; }
+      .home:hover { background: var(--gold-soft); transform: translateY(-2px); }
+      .ghost { background: transparent; border: 1px solid var(--green-600); color: var(--green-300); }
+      .ghost:hover { border-color: var(--green-400); color: var(--cream); }
+      .brandline {
+        margin-top: 46px;
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 1.4rem;
+        color: var(--cream);
+        letter-spacing: 0.01em;
+      }
+      .brandline .amp { color: var(--gold-soft); font-style: italic; }
+      .brandline .sub {
+        display: block;
+        font-family: 'EB Garamond', serif;
+        font-style: italic;
+        font-size: 0.9rem;
+        color: var(--green-400);
+        letter-spacing: 0.14em;
+        margin-top: 2px;
+      }
+    </style>
+  </head>
+  <body>
+    <svg class="nf-fork" width="42" height="98" viewBox="0 0 60 158" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M18 12 L18 50 Q18 65 30 67 Q42 65 42 50 L42 12" />
+      <path d="M30 12 L30 50" />
+      <path d="M30 67 L30 150" />
+    </svg>
+
+    <p class="nf-code">4<span class="amp">0</span>4</p>
+    <h1>Страница не найдена</h1>
+    <div class="nf-it">Pagina non trovata</div>
+    <p class="lead">Похоже, такого блюда нет в нашем меню. Возможно, ссылка устарела или адрес введён неверно.</p>
+
+    <div class="actions">
+      <a class="home" id="home-link" href="/">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8" /><path d="M5 10v10h14V10" /></svg>
+        На главную
+      </a>
+      <a class="ghost" id="catalog-link" href="/katalog/">
+        Смотреть каталог
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+      </a>
+    </div>
+
+    <div class="brandline">
+      Dolce<span class="amp">&amp;</span>Salato
+      <span class="sub">food solution</span>
+    </div>
+
+    <script>
+      // Ссылки на главную/каталог с учётом базового пути.
+      // На project-сайте GitHub Pages (username.github.io/REPO/) база — первый
+      // сегмент пути. Для своего домена в корне поставьте segmentsToKeep = 0.
+      (function () {
+        var segmentsToKeep = 1;
+        var parts = window.location.pathname.split('/').filter(Boolean);
+        var base = '/' + parts.slice(0, segmentsToKeep).join('/');
+        if (base !== '/') base += '/';
+        document.getElementById('home-link').href = base;
+        document.getElementById('catalog-link').href = base + 'katalog/';
+      })();
+    </script>
+  </body>
+</html>

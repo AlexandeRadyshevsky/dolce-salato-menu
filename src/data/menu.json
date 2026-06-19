@@ -1,0 +1,861 @@
+{
+  "site": {
+    "name": "Dolce&Salato",
+    "domain": "dolcesalato.ru",
+    "url": "https://dolcesalato.ru/",
+    "title_ru": "Dolce&Salato — итальянские продукты оптом для ресторанов и HoReCa в Москве",
+    "description_ru": "Дистрибьютор итальянских продуктов для HoReCa в Москве: оливковое масло, паста, рис, трюфель, сыры оптом. Доставка по Москве за 24 часа. Запросите прайс-лист.",
+    "keywords_ru": "итальянские продукты оптом, поставки HoReCa Москва, оливковое масло оптом, паста оптом, сушеные помидоры оптом, трюфель оптом, Dolce Salato",
+    "locale": "ru_RU",
+    "yandex_verification": "PASTE_YANDEX_WEBMASTER_CODE",
+    "og_image": "images/og-cover.jpg"
+  },
+  "brand": {
+    "name": "Dolce&Salato",
+    "tagline_ru": "Итальянские деликатесы для ресторанов",
+    "tagline_it": "Food solution dall'antipasto al dessert",
+    "intro_ru": "Динамичная компания, созданная экспертами в области итальянских продуктов. Мы находим «Food Solution» для любого ресторана — всё для лучших блюд итальянской кухни, от закуски до десерта.",
+    "intro_it": "Una società dinamica, nata dall'esperienza di operatori dedicati alla ricerca di specialità alimentari italiane: alta qualità, praticità d'uso e un'ampia gamma in vari formati.",
+    "tagline_en": "food solution"
+  },
+  "contact": {
+    "office_ru": "Московский офис",
+    "address_ru": "141400, Химки, ул. Рабочая, д. 2, стр. 95 — Бизнес-парк «Генерал»",
+    "locality": "Химки",
+    "region": "Московская область",
+    "postal": "141400",
+    "country": "RU",
+    "phone": "+7 (495) 782 83 12",
+    "email": "ds.zakaz@gmail.com",
+    "sites": [
+      "dolcesalato.ru",
+      "dolcesalatopremium.ru"
+    ]
+  },
+  "categories": [
+    {
+      "id": "olio",
+      "name_ru": "Оливковое масло",
+      "name_it": "Olio d'oliva",
+      "products": [
+        {
+          "id": "olio-laudemio",
+          "name_ru": "Масло первого отжима Laudemio",
+          "name_it": "Olio extravergine d'oliva",
+          "producer": "Laudemio Frescobaldi",
+          "format": "250 мл · 500 мл",
+          "desc_ru": "Оливки собирают рано, до созревания, ради изумрудного цвета и ароматной свежести. Отжим в считанные часы.",
+          "pairing": "Карпаччо, белое мясо, овощи на гриле",
+          "slug": "olivkovoe-maslo-laudemio-optom"
+        },
+        {
+          "id": "olio-taggiasche",
+          "name_ru": "Масло из таджасских оливок",
+          "name_it": "Olio di olive Taggiasche",
+          "producer": "Oleificio Raineri",
+          "format": "750 мл",
+          "desc_ru": "Исключительно из таджасских оливок Лигурии — масло редкой ароматности и тонкого вкуса.",
+          "slug": "maslo-tadzhasskih-oliv-optom"
+        },
+        {
+          "id": "olio-gradassi",
+          "name_ru": "Масло первого отжима «Буйо»",
+          "name_it": "Olio extravergine «Buio»",
+          "producer": "Frantoio Gradassi",
+          "format": "500 мл",
+          "desc_ru": "Из 100% итальянских оливок. Разлив без света и кислорода сохраняет органолептику; тёмное стекло замедляет окисление.",
+          "pairing": "Красное мясо, брускетта, супы из бобовых",
+          "slug": "olivkovoe-maslo-buio-optom"
+        },
+        {
+          "id": "olio-centonze",
+          "name_ru": "Масло первого отжима, Сицилия",
+          "name_it": "Olio extravergine di oliva",
+          "producer": "Centonze «Case di Latomie»",
+          "format": "500 мл",
+          "desc_ru": "Биодинамическое хозяйство в Кастельветрано. Насыщенный фруктовый вкус с лёгкой горчинкой.",
+          "slug": "olivkovoe-maslo-sicilia-optom"
+        },
+        {
+          "id": "olio-tartufo",
+          "name_ru": "Масло с белым трюфелем",
+          "name_it": "Olio al tartufo bianco",
+          "producer": "Geofoods",
+          "format": "250 мл",
+          "desc_ru": "Масло из 100% итальянских оливок с ароматом белого трюфеля.",
+          "slug": "maslo-s-belym-tryufelem-optom"
+        },
+        {
+          "id": "olio-dolcesalato",
+          "name_ru": "Масло для салатов Extra Salad Oil",
+          "name_it": "Olio per insalata",
+          "producer": "Dolce&Salato",
+          "format": "1 л · 5 л",
+          "desc_ru": "Универсальное масло собственной марки для ежедневной работы кухни в удобных форматах HoReCa.",
+          "slug": "maslo-dlya-salatov-optom"
+        }
+      ],
+      "slug": "olivkovoe-maslo"
+    },
+    {
+      "id": "aceto",
+      "name_ru": "Уксус",
+      "name_it": "Aceto",
+      "products": [
+        {
+          "id": "aceto-balsamico",
+          "name_ru": "Бальзамический уксус из Модены",
+          "name_it": "Aceto Balsamico di Modena IGP",
+          "producer": "Raineri",
+          "format": "250 мл · 5 л",
+          "desc_ru": "Классический бальзамик IGP насыщенного вкуса. В удобных форматах для кухни и розлива.",
+          "pairing": "Салаты, выдержанные сыры, клубника",
+          "slug": "balzamicheskiy-uksus-modena-optom"
+        },
+        {
+          "id": "aceto-assortimento",
+          "name_ru": "Бальзамические соусы (ассортимент)",
+          "name_it": "Salse balsamiche",
+          "producer": "Acetaia",
+          "format": "250 мл",
+          "desc_ru": "Линейка ароматизированных бальзамических соусов-кремов — к мясу, рыбе, десертам и сырам.",
+          "slug": "balzamicheskie-sousy-optom"
+        },
+        {
+          "id": "aceto-frutta",
+          "name_ru": "Фруктовый уксус",
+          "name_it": "Aceto di frutta",
+          "producer": "Maso Luggin",
+          "format": "250 мл · 500 мл",
+          "desc_ru": "Из свежих яблок и ягод Валь Веносты, выдержка в горных деревянных бочках. Яркий фруктовый акцент.",
+          "slug": "fruktovyi-uksus-optom"
+        }
+      ],
+      "slug": "uksus"
+    },
+    {
+      "id": "pasta",
+      "name_ru": "Паста",
+      "name_it": "Pasta",
+      "products": [
+        {
+          "id": "pasta-spaghetti",
+          "name_ru": "Спагетти",
+          "name_it": "Spaghetti",
+          "producer": "Pasta Gentile",
+          "format": "500 г",
+          "desc_ru": "Граньяно с 1876 г. Бронзовые волоки и медленная сушка по методу «Чирилло» из пшеницы «Сенаторе Капелли».",
+          "pairing": "Помодоро, карбонара, алио-олио",
+          "slug": "spagetti-optom"
+        },
+        {
+          "id": "pasta-gentile",
+          "name_ru": "Фузилли «Сенаторе Капелли»",
+          "name_it": "Fusilli Senatore Cappelli",
+          "producer": "Pasta Gentile",
+          "format": "500 г",
+          "desc_ru": "Витая паста из старинного сорта пшеницы. Шероховатая поверхность отлично держит соус.",
+          "slug": "fusilli-senatore-cappelli-optom"
+        },
+        {
+          "id": "pasta-paccheri",
+          "name_ru": "Паккери",
+          "name_it": "Paccheri",
+          "producer": "Pasta Gentile",
+          "format": "500 г",
+          "desc_ru": "Крупные трубки, идеально удерживающие густые соусы и запеканки.",
+          "slug": "pakkeri-optom"
+        },
+        {
+          "id": "pasta-calamarata",
+          "name_ru": "Каламарата",
+          "name_it": "Calamarata",
+          "producer": "Pastificio Amadio",
+          "format": "500 г",
+          "desc_ru": "Широкие кольца в форме колец кальмара — для рыбных и морских соусов.",
+          "slug": "kalamarata-optom"
+        },
+        {
+          "id": "pasta-mezzemaniche",
+          "name_ru": "Медзе манике",
+          "name_it": "Mezze Maniche",
+          "producer": "Pasta Fiordimonte",
+          "format": "500 г",
+          "desc_ru": "Ремесленная паста из Марке, медленная обработка при низких температурах.",
+          "slug": "mezze-manike-optom"
+        },
+        {
+          "id": "pasta-fusilli",
+          "name_ru": "Фузилли ремесленные",
+          "name_it": "Fusilli artigianali",
+          "producer": "Pasta Fiordimonte",
+          "format": "500 г",
+          "desc_ru": "Классическая витая форма для густых овощных и сливочных соусов.",
+          "slug": "fusilli-remeslennye-optom"
+        },
+        {
+          "id": "pasta-fregola",
+          "name_ru": "Фрегола сарда",
+          "name_it": "Fregola sarda",
+          "format": "500 г",
+          "desc_ru": "Традиция Сардинии: запечённые шарики семолы 2–6 мм, напоминающие кускус.",
+          "pairing": "Морепродукты, бульоны, овощи",
+          "slug": "fregola-sarda-optom"
+        }
+      ],
+      "slug": "pasta"
+    },
+    {
+      "id": "riso",
+      "name_ru": "Рис",
+      "name_it": "Riso",
+      "products": [
+        {
+          "id": "riso-acquerello",
+          "name_ru": "Карнароли «Acquerello», выдержка 1 год",
+          "name_it": "Riso Carnaroli Acquerello",
+          "producer": "Tenuta Colombara",
+          "format": "500 г · 1 кг · 2,5 кг",
+          "desc_ru": "Категория «А», класс «Экстра». Выдержанный и медленно очищенный рис — с ним невозможно испортить ризотто.",
+          "pairing": "Ризотто, тимбаль, гарниры",
+          "slug": "ris-karnaroli-acquerello-optom"
+        },
+        {
+          "id": "riso-venere",
+          "name_ru": "Чёрный рис «Венере»",
+          "name_it": "Riso Nero Venere",
+          "format": "1 кг",
+          "desc_ru": "Очищается каменными жерновами; сохраняет цвет и питательные свойства. Для салатов и гарниров к рыбе.",
+          "slug": "ris-chernyi-venere-optom"
+        },
+        {
+          "id": "riso-carnaroli-valle",
+          "name_ru": "Карнароли «Valle»",
+          "name_it": "Riso Carnaroli Valle",
+          "format": "1 кг",
+          "desc_ru": "Исключительно плотные крупные зёрна — держат форму при варке, идеальны для классического ризотто.",
+          "slug": "ris-karnaroli-valle-optom"
+        }
+      ],
+      "slug": "ris"
+    },
+    {
+      "id": "zafferano",
+      "name_ru": "Шафран",
+      "name_it": "Zafferano",
+      "products": [
+        {
+          "id": "zafferano-stimmi",
+          "name_ru": "Рыльца шафрана",
+          "name_it": "Stimmi di zafferano",
+          "producer": "Roma Fine Foods",
+          "format": "2 г",
+          "desc_ru": "Чистый шафран высшего качества с высоким содержанием кроцина и сафранала. Рыльца собирают на рассвете вручную.",
+          "pairing": "Ризотто алла миланезе, соусы, выпечка",
+          "slug": "shafran-rylca-optom"
+        }
+      ],
+      "slug": "shafran"
+    },
+    {
+      "id": "farina",
+      "name_ru": "Мука",
+      "name_it": "Farina",
+      "products": [
+        {
+          "id": "farina-pizza",
+          "name_ru": "Смесь для пиццы «Pizza alla Pala»",
+          "name_it": "Mix per pizza",
+          "producer": "Molino Iaquone",
+          "format": "25 кг",
+          "desc_ru": "Профессиональная мучная смесь для римской пиццы-лопаты. Высокая сила муки для долгого брожения.",
+          "slug": "smes-dlya-piccy-optom"
+        },
+        {
+          "id": "farina-bianca",
+          "name_ru": "Мука мягких сортов, тип 00",
+          "name_it": "Farina di grano tenero tipo 00",
+          "producer": "Molino Iaquone",
+          "format": "25 кг",
+          "desc_ru": "Сильная мука для пиццы и хлеба длительного брожения. W 490/520.",
+          "slug": "muka-tip-00-optom"
+        }
+      ],
+      "slug": "muka"
+    },
+    {
+      "id": "farro",
+      "name_ru": "Фарро",
+      "name_it": "Farro",
+      "products": [
+        {
+          "id": "farro-perlato",
+          "name_ru": "Зёрна спельты «Фарро Перлато»",
+          "name_it": "Farro Perlato",
+          "producer": "Luzi",
+          "format": "1 кг",
+          "desc_ru": "Древний злак с низкой калорийностью, богат клетчаткой. Для тёплых супов и салатов из сезонных овощей.",
+          "slug": "polba-farro-perlato-optom"
+        }
+      ],
+      "slug": "polba"
+    },
+    {
+      "id": "brodi",
+      "name_ru": "Смеси для бульонов",
+      "name_it": "Brodi",
+      "products": [
+        {
+          "id": "brodo-porcini",
+          "name_ru": "Бульон из белых грибов",
+          "name_it": "Brodo di funghi porcini",
+          "format": "1 кг",
+          "desc_ru": "Смесь на основе белых грибов — усиливает вкус супов, соусов и начинок.",
+          "slug": "bulon-iz-belyh-gribov-optom"
+        },
+        {
+          "id": "brodo-carne",
+          "name_ru": "Мясной бульон",
+          "name_it": "Brodo di carne",
+          "format": "1 кг",
+          "desc_ru": "Насыщенная основа для супов, соусов и тушёных блюд.",
+          "slug": "myasnoy-bulon-optom"
+        },
+        {
+          "id": "brodo-ortolano",
+          "name_ru": "Овощной бульон",
+          "name_it": "Brodo ortolano",
+          "format": "1 кг",
+          "desc_ru": "Делает ярче вкус свежих и варёных овощей, овощных супов.",
+          "slug": "ovoshchnoy-bulon-optom"
+        },
+        {
+          "id": "fumetto-pesce",
+          "name_ru": "Рыбный бульон (фюме)",
+          "name_it": "Fumetto di pesce",
+          "format": "1 кг",
+          "desc_ru": "Порошок для соусов, кремов для ризотто и рыбных супов (17% рыбы).",
+          "slug": "rybnyi-bulon-fyume-optom"
+        }
+      ],
+      "slug": "smesi-dlya-bulionov"
+    },
+    {
+      "id": "verdura",
+      "name_ru": "Овощи",
+      "name_it": "Verdura",
+      "products": [
+        {
+          "id": "cipolle-agrodolce",
+          "name_ru": "Красный лук в кисло-сладком соусе",
+          "name_it": "Cipolle rosse in agrodolce",
+          "format": "1 кг",
+          "desc_ru": "Тонкие лепестки красного лука в кисло-сладкой заливке. К сырам, мясу и брускеттам.",
+          "slug": "krasnyi-luk-agrodolce-optom"
+        },
+        {
+          "id": "peperoni-grigliati",
+          "name_ru": "Перец, обжаренный на гриле",
+          "name_it": "Peperoni grigliati",
+          "format": "1 кг",
+          "desc_ru": "Сладкий перец, обжаренный на гриле, в масле с травами. Закуска, гарнир, начинка.",
+          "slug": "perec-gril-optom"
+        }
+      ],
+      "slug": "ovoshi"
+    },
+    {
+      "id": "pomidori",
+      "name_ru": "Помидоры",
+      "name_it": "Pomodori",
+      "slug": "pomidori",
+      "products": [
+        {
+          "id": "pomodori-rustici",
+          "name_ru": "Помидоры полусушёные «по-деревенски»",
+          "name_it": "Pomodori rustici semi-secchi",
+          "format": "1 кг",
+          "desc_ru": "Итальянские томаты дольками, подсушенные на солнце, с травами в масле.",
+          "pairing": "Аперитив, закуски, пицца",
+          "slug": "pomidory-polusushenye-optom"
+        },
+        {
+          "id": "pomodori-gialli",
+          "name_ru": "Жёлтые полусушёные помидоры",
+          "name_it": "Pomodori gialli semi-secchi",
+          "format": "1 кг",
+          "desc_ru": "Сладкие жёлтые томаты в масле с травами — яркий цвет и мягкий вкус.",
+          "slug": "pomidory-zheltye-polusushenye-optom"
+        }
+      ]
+    },
+    {
+      "id": "artishoki",
+      "name_ru": "Артишоки",
+      "name_it": "Carciofi",
+      "slug": "artishoki",
+      "products": [
+        {
+          "id": "carciofi-romana",
+          "name_ru": "Артишоки «по-римски» в масле",
+          "name_it": "Carciofi alla romana in olio",
+          "format": "3 кг",
+          "desc_ru": "С черенком, в масле с петрушкой, орегано и чесноком. Закуска и гарнир.",
+          "slug": "artishoki-po-rimski-optom"
+        }
+      ]
+    },
+    {
+      "id": "olivki",
+      "name_ru": "Оливки",
+      "name_it": "Olive",
+      "slug": "olivki",
+      "products": [
+        {
+          "id": "olive-cerignola",
+          "name_ru": "Оливки «Белла ди Чериньола»",
+          "name_it": "Olive «Bella di Cerignola»",
+          "producer": "Fratepietro",
+          "format": "3 кг",
+          "desc_ru": "Одни из самых крупных оливок в мире, плотная мякоть, деликатный вкус.",
+          "slug": "olivki-cerignola-optom"
+        },
+        {
+          "id": "olive-taggiasche",
+          "name_ru": "Оливки таджасские без косточек",
+          "name_it": "Olive Taggiasche denocciolate",
+          "format": "1 кг",
+          "desc_ru": "Маленькие чёрные оливки в оливковом масле первого отжима. Для соусов и вторых блюд.",
+          "slug": "olivki-tadzhasskie-optom"
+        }
+      ]
+    },
+    {
+      "id": "kapersi",
+      "name_ru": "Каперсы",
+      "name_it": "Capperi",
+      "slug": "kapersi",
+      "products": [
+        {
+          "id": "capperi-aceto",
+          "name_ru": "Каперсы в винном уксусе",
+          "name_it": "Capperi all'aceto di vino",
+          "format": "1 кг",
+          "slug": "kapersy-v-vinnom-uksuse-optom",
+          "desc_ru": "Отборные каперсы в заливке из винного уксуса — пикантный акцент для соусов, пасты, рыбы и тартаров.",
+          "pairing": "Вителло тоннато, паста путтанеска, тартары"
+        }
+      ]
+    },
+    {
+      "id": "funghi",
+      "name_ru": "Грибы",
+      "name_it": "Funghi",
+      "products": [
+        {
+          "id": "porcini-trifolati",
+          "name_ru": "Обжаренные белые грибы в масле",
+          "name_it": "Porcini trifolati in olio",
+          "format": "1 кг",
+          "desc_ru": "Нарезанные и обжаренные белые грибы. Для пасты, ризотто, лазаньи и мясных блюд.",
+          "slug": "belye-griby-v-masle-optom"
+        },
+        {
+          "id": "champignon-trifolati",
+          "name_ru": "Обжаренные шампиньоны в масле",
+          "name_it": "Champignon trifolati in olio",
+          "format": "1 кг",
+          "desc_ru": "Отборные шампиньоны небольшого размера, обжаренные в день сбора.",
+          "slug": "shampinony-v-masle-optom"
+        },
+        {
+          "id": "misto-funghi",
+          "name_ru": "Грибное ассорти",
+          "name_it": "Misto funghi",
+          "format": "1 кг",
+          "desc_ru": "Белые грибы и строфария по старинному рецепту. Для гарниров, поленты, пиццы.",
+          "slug": "gribnoe-assorti-optom"
+        }
+      ],
+      "slug": "gribyi"
+    },
+    {
+      "id": "oregano",
+      "name_ru": "Орегано",
+      "name_it": "Origano",
+      "slug": "oregano",
+      "products": [
+        {
+          "id": "origano-selvatico",
+          "name_ru": "Орегано дикорастущий",
+          "name_it": "Origano selvatico",
+          "producer": "Azienda Agrobiologica D'Amico",
+          "format": "500 г",
+          "slug": "oregano-dikorastushchiy-optom",
+          "desc_ru": "Собран, высушен и упакован вручную. Нежный вкус — приправа для пиццы, соусов и множества блюд."
+        }
+      ]
+    },
+    {
+      "id": "creme-salse",
+      "name_ru": "Кремы и соусы",
+      "name_it": "Creme e salse",
+      "products": [
+        {
+          "id": "pesto-pistacchio",
+          "name_ru": "Песто из фисташек",
+          "name_it": "Pesto di pistacchio",
+          "producer": "Sciara",
+          "format": "1 кг",
+          "desc_ru": "Типичный для Бронте, 60% фисташек. В чистом виде или как основа соуса.",
+          "pairing": "Паста, равиоли, брускетты",
+          "slug": "pesto-iz-fistashek-optom"
+        },
+        {
+          "id": "crema-peperoni",
+          "name_ru": "Крем из сладкого перца",
+          "name_it": "Crema di peperoni",
+          "format": "1 кг",
+          "desc_ru": "Нежный крем из свежих сладких перчиков, готовый к использованию. Для брускетт и соусов.",
+          "slug": "krem-iz-sladkogo-perca-optom"
+        },
+        {
+          "id": "crema-carciofi",
+          "name_ru": "Крем из артишоков",
+          "name_it": "Crema di carciofi",
+          "format": "1 кг",
+          "desc_ru": "Бархатистый крем из артишоков. Для закусок, пасты и начинок.",
+          "slug": "krem-iz-artishokov-optom"
+        }
+      ],
+      "slug": "kremi-i-sousi"
+    },
+    {
+      "id": "mare",
+      "name_ru": "Рыба и морепродукты",
+      "name_it": "Specialità di mare",
+      "products": [
+        {
+          "id": "acciughe",
+          "name_ru": "Филе анчоусов в масле",
+          "name_it": "Acciughe a filetti in olio",
+          "format": "500 г · 2 кг",
+          "desc_ru": "Анчоусы Средиземного моря, очищенные вручную и уложенные в стеклянные банки.",
+          "slug": "file-anchousov-optom"
+        },
+        {
+          "id": "tonno",
+          "name_ru": "Тунец в масле (Premium)",
+          "name_it": "Tonno sottolio",
+          "format": "500 г · 2 кг",
+          "desc_ru": "Отборные куски тунца, обработанные вручную по сицилийской традиции.",
+          "slug": "tunec-v-masle-optom"
+        },
+        {
+          "id": "bottarga",
+          "name_ru": "Боттарга Голд",
+          "name_it": "Bottarga Gold",
+          "format": "100 г, вакуум",
+          "desc_ru": "Вяленая икра кефали средней выдержки. Подаётся тонкими ломтиками с маслом и лимоном.",
+          "pairing": "Спагетти, карпаччо, тосты",
+          "slug": "bottarga-optom"
+        }
+      ],
+      "slug": "ryba-i-moreprodukti"
+    },
+    {
+      "id": "retail",
+      "name_ru": "Линия ритейл",
+      "name_it": "Linea retail",
+      "products": [
+        {
+          "id": "retail-pomodori",
+          "name_ru": "Помидоры сушёные в масле",
+          "name_it": "Pomodori secchi sottolio",
+          "producer": "Ristoris",
+          "format": "295 г",
+          "desc_ru": "Розничный формат для полки магазина.",
+          "slug": "pomidory-sushenye-optom"
+        },
+        {
+          "id": "retail-funghi",
+          "name_ru": "Белые грибы в масле",
+          "name_it": "Funghi porcini sottolio",
+          "producer": "Ristoris",
+          "format": "295 г",
+          "desc_ru": "Готовые к подаче белые грибы в розничной банке.",
+          "slug": "belye-griby-retail-optom"
+        },
+        {
+          "id": "retail-sugo",
+          "name_ru": "Томатный соус",
+          "name_it": "Sugo al pomodoro",
+          "producer": "Ristoris",
+          "format": "320 г",
+          "desc_ru": "Классический томатный соус для быстрых блюд.",
+          "slug": "tomatnyi-sous-optom"
+        },
+        {
+          "id": "retail-radicchio",
+          "name_ru": "Соус из радиккьо",
+          "name_it": "Salsa di radicchio",
+          "producer": "Ristoris",
+          "format": "210 г",
+          "desc_ru": "Соус из красного цикория с лёгкой горчинкой.",
+          "slug": "sous-iz-radikkio-optom"
+        }
+      ],
+      "slug": "linia-retail"
+    },
+    {
+      "id": "frutta",
+      "name_ru": "Фрукты",
+      "name_it": "Frutta",
+      "products": [
+        {
+          "id": "amarena",
+          "name_ru": "Вишня в сиропе «Amarena»",
+          "name_it": "Amarena sciroppata",
+          "format": "500 г · 3 кг",
+          "desc_ru": "Спелую вишню очищают и удаляют косточки, заливают сиропом. Для выпечки и мороженого.",
+          "slug": "vishnya-amarena-optom"
+        },
+        {
+          "id": "frutti-bosco",
+          "name_ru": "Лесные ягоды в сиропе",
+          "name_it": "Frutti di bosco allo sciroppo",
+          "format": "500 г",
+          "desc_ru": "Малина, ежевика, смородина и черника. Для блинчиков, тортов, муссов и панна-котты.",
+          "slug": "lesnye-yagody-v-sirope-optom"
+        },
+        {
+          "id": "mini-pere",
+          "name_ru": "Мини-груши в сиропе",
+          "name_it": "Mini pere sciroppate",
+          "format": "500 г",
+          "desc_ru": "Отборные груши целиком в лёгком сиропе. Для фруктовых салатов и десертов.",
+          "slug": "mini-grushi-v-sirope-optom"
+        }
+      ],
+      "slug": "frukti"
+    },
+    {
+      "id": "mostarda",
+      "name_ru": "Дополнения к сырам и мясу",
+      "name_it": "Mostarda e salse",
+      "products": [
+        {
+          "id": "mostarda-frutta",
+          "name_ru": "Мостарда фруктовая",
+          "name_it": "Mostarda di frutta",
+          "format": "200 г · 1 кг",
+          "desc_ru": "Сладко-пикантная мостарда из фруктов с горчицей. К выдержанным и голубым сырам.",
+          "pairing": "Горгонзола, пармезан, варёное мясо",
+          "slug": "mostarda-fruktovaya-optom"
+        },
+        {
+          "id": "mostarda-zucca",
+          "name_ru": "Мостарда из тыквы",
+          "name_it": "Mostarda di zucca",
+          "format": "1 кг",
+          "desc_ru": "К выпечке и мягким сырам, таким как таледжио.",
+          "slug": "mostarda-iz-tykvy-optom"
+        }
+      ],
+      "slug": "dopolnenia-k-siram"
+    },
+    {
+      "id": "carni",
+      "name_ru": "Мясные деликатесы",
+      "name_it": "Carni e salumi",
+      "products": [
+        {
+          "id": "prosciutto-crudo",
+          "name_ru": "Прошутто крудо",
+          "name_it": "Prosciutto crudo",
+          "format": "0°C / +4°C",
+          "desc_ru": "Сыровяленая ветчина, тонкий выдержанный вкус.",
+          "pairing": "Дыня, гриссини, фокачча",
+          "slug": "proshutto-krudo-optom"
+        },
+        {
+          "id": "mortadella",
+          "name_ru": "Мортаделла с фисташками",
+          "name_it": "Mortadella con pistacchio",
+          "format": "0°C / +4°C",
+          "desc_ru": "Классическая болонская мортаделла с фисташками.",
+          "slug": "mortadella-optom"
+        },
+        {
+          "id": "prosciutto-cotto",
+          "name_ru": "Прошутто котто",
+          "name_it": "Prosciutto cotto",
+          "format": "0°C / +4°C",
+          "desc_ru": "Варёная ветчина высшего качества, нежная и сочная.",
+          "slug": "proshutto-kotto-optom"
+        },
+        {
+          "id": "bresaola",
+          "name_ru": "Брезаола",
+          "name_it": "Bresaola",
+          "format": "0°C / +4°C",
+          "desc_ru": "Вяленая говядина, нежный солоноватый вкус.",
+          "slug": "brezaola-optom"
+        }
+      ],
+      "slug": "myasnye-delikatesy"
+    },
+    {
+      "id": "formaggi",
+      "name_ru": "Сыры",
+      "name_it": "Formaggi",
+      "products": [
+        {
+          "id": "grand-vyatka",
+          "name_ru": "Сверхтвёрдый сыр «Гранд Вятка»",
+          "name_it": "Formaggio duro «Grand Vyatka»",
+          "producer": "Grand Vyatka",
+          "format": "выдержка 14 / 18 / 24 мес",
+          "desc_ru": "Итальянская технология типа Пармезана. Рассыпчатая структура, яркий, но не острый вкус.",
+          "pairing": "Ризотто, паста, аперитив",
+          "slug": "syr-grand-vyatka-optom"
+        },
+        {
+          "id": "taleggio",
+          "name_ru": "Сыр «Таледжио»",
+          "name_it": "Formaggio «Taleggio»",
+          "format": "1–1,2 кг",
+          "desc_ru": "Мягкий сыр из коровьего молока, тонкая корка, фруктовые нотки.",
+          "slug": "syr-taledzhio-optom"
+        },
+        {
+          "id": "gorgonzola",
+          "name_ru": "Горгонзола (голубая плесень)",
+          "name_it": "Gorgonzola",
+          "format": "2–4 кг",
+          "desc_ru": "Голубые прожилки благородной плесени, мягкая кремовая текстура. Для соусов и ризотто.",
+          "slug": "gorgonzola-optom"
+        }
+      ],
+      "slug": "siryi"
+    },
+    {
+      "id": "tartufo",
+      "name_ru": "Трюфель",
+      "name_it": "Tartufo",
+      "products": [
+        {
+          "id": "tartufo-nero",
+          "name_ru": "Чёрный трюфель",
+          "name_it": "Tartufo nero",
+          "format": "сезонно",
+          "desc_ru": "Ценный гриб с насыщенным ароматом, плотной текстурой и земляным вкусом.",
+          "pairing": "Паста, ризотто, яйца, сыры",
+          "slug": "chernyi-tryufel-optom"
+        }
+      ],
+      "slug": "trufel"
+    },
+    {
+      "id": "dolci",
+      "name_ru": "Десерты",
+      "name_it": "Dolci",
+      "products": [
+        {
+          "id": "praline-pistacchio",
+          "name_ru": "Пралине с фисташками",
+          "name_it": "Praline al pistacchio",
+          "producer": "Dolciaria Luigia",
+          "format": "190 г",
+          "desc_ru": "Ремесленные пралине из Белларии (Римини) по семейным рецептам.",
+          "slug": "praline-s-fistashkami-optom"
+        },
+        {
+          "id": "cioccolatini",
+          "name_ru": "Набор шоколадных конфет",
+          "name_it": "Cioccolatini assortiti",
+          "producer": "Pasticceria De Vivo",
+          "format": "подарочная коробка",
+          "desc_ru": "Ассорти конфет ручной работы в подарочной упаковке.",
+          "slug": "shokoladnye-konfety-optom"
+        }
+      ],
+      "slug": "deserti"
+    },
+    {
+      "id": "feste",
+      "name_ru": "Праздничная продукция",
+      "name_it": "Specialità delle feste",
+      "products": [
+        {
+          "id": "panettone-pistacchio",
+          "name_ru": "Панеттоне фисташковый",
+          "name_it": "Panettone al pistacchio",
+          "producer": "Pasticceria De Vivo",
+          "format": "1 кг",
+          "desc_ru": "Мягкое тесто с ганашем из сицилийской фисташки и крошкой тёмного шоколада.",
+          "slug": "panettone-fistashkovyi-optom"
+        },
+        {
+          "id": "panettone-cioccolato",
+          "name_ru": "Панеттоне с шоколадом",
+          "name_it": "Panettone al cioccolato",
+          "producer": "Pasticceria De Vivo",
+          "format": "1 кг",
+          "desc_ru": "Классический панеттоне с глазурью и кусочками тёмного шоколада.",
+          "slug": "panettone-s-shokoladom-optom"
+        },
+        {
+          "id": "panettone-classico",
+          "name_ru": "Панеттоне традиционный",
+          "name_it": "Panettone tradizionale",
+          "producer": "Albertengo",
+          "format": "1 кг",
+          "desc_ru": "Только натуральная закваска и отборные ингредиенты у подножия Альп.",
+          "slug": "panettone-tradicionnyi-optom"
+        },
+        {
+          "id": "panettone-frutta",
+          "name_ru": "Панеттоне с цукатами",
+          "name_it": "Panettone con canditi",
+          "producer": "Albertengo",
+          "format": "1 кг",
+          "desc_ru": "Классическая рецептура с изюмом и апельсиновыми цукатами.",
+          "slug": "panettone-s-cukatami-optom"
+        },
+        {
+          "id": "pandoro",
+          "name_ru": "Пан д'Оро Гурмэ",
+          "name_it": "Pandoro Gourmet",
+          "producer": "Albertengo",
+          "format": "1 кг",
+          "desc_ru": "Пьемонтская классика праздничного стола с ванильным ароматом.",
+          "slug": "pandoro-optom"
+        }
+      ],
+      "slug": "praznichnaya-produkzia"
+    }
+  ],
+  "about": {
+    "title_ru": "О нас",
+    "title_it": "Chi siamo",
+    "slug": "o-nas",
+    "founded_ru": "Dolce&Salato создана в 2008 году. В основе компании — опыт и старания специалистов в области продуктов питания. Основатели хотели поставлять на российский рынок не только самые традиционные и классические итальянские пищевые продукты, но также и альтернативные.",
+    "solution_ru": "Мы находим Food Solution для любого ресторана — всё то, что необходимо, чтобы создать лучшие блюда итальянской и международной кухни от закусок до десерта.",
+    "tasting_title_ru": "Ознакомление",
+    "tasting_ru": "В отношениях с клиентами нам важно рассказывать о наших продуктах. На презентациях и дегустациях в московском офисе и в кулинарной школе «Novikov School» мы объясняем, как эти продукты нужно использовать."
+  },
+  "delivery": {
+    "title_ru": "Доставка",
+    "title_it": "Consegna",
+    "slug": "dostavka",
+    "lead_ru": "Доставка по Москве и области в течение 24 часов с момента получения заказа. Доставка в Санкт-Петербург дважды в неделю — во вторник и пятницу.",
+    "fleet_ru": "Автопарк из 20 фургонов с холодильными камерами обеспечивает сохранность продуктов. Эффективная логистика и склад, оборудованный по последнему слову техники, позволяют предлагать непревзойдённые по качеству услуги доставки.",
+    "points_ru": [
+      "Ввод заказа в режиме реального времени",
+      "Полное совпадение между заказанными и полученными продуктами",
+      "Обученные перевозчики заботятся о сохранности продуктов в пути",
+      "Минимальный заказ — 8 000 ₽"
+    ]
+  }
+}

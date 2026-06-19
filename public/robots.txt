@@ -1,0 +1,15 @@
+# robots.txt — Dolce&Salato
+# Разрешаем индексацию всего сайта всем роботам.
+
+User-agent: *
+Allow: /
+Disallow: /assets/*.js$
+
+# Яндекс: убираем дубли по UTM-меткам и параметрам сортировки/поиска
+User-agent: Yandex
+Allow: /
+Clean-param: utm_source&utm_medium&utm_campaign&utm_term&utm_content&yclid&_openstat
+Clean-param: q&sort&page
+
+# Карта сайта
+Sitemap: https://dolcesalato.ru/sitemap.xml
