@@ -1,0 +1,21 @@
+{
+  "name": "dolce-salato-api",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "API формы «Запросить прайс-лист»: SQLite + email + Unisender",
+  "engines": {
+    "node": ">=22.9"
+  },
+  "scripts": {
+    "start": "node --env-file-if-exists=.env src/server.js",
+    "sync": "node --env-file-if-exists=.env src/sync.js",
+    "unisender:setup": "node --env-file-if-exists=.env src/unisender-setup.js",
+    "export": "node --env-file-if-exists=.env src/export.js",
+    "test": "node --test test/*.test.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.10.0",
+    "nodemailer": "^6.10.1"
+  }
+}

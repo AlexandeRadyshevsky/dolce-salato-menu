@@ -1,0 +1,14 @@
+# /etc/systemd/system/dolcesalato-api.service
+[Unit]
+Description=Dolce&Salato API (price-list form)
+After=network.target
+
+[Service]
+WorkingDirectory=/var/www/dolcesalato/server
+ExecStart=/usr/bin/npm start
+Restart=always
+User=www-data
+Environment=NODE_ENV=production
+
+[Install]
+WantedBy=multi-user.target

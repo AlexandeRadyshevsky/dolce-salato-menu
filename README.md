@@ -1,157 +1,75 @@
-# Dolce&Salato — интерактивное меню
+# Dolce&Salato — сайт (редизайн 2026)
 
-Мини-сайт каталога итальянских деликатесов **Dolce&Salato** на **React + Vite**.
-Тёплый минимализм, антиква, боковое меню с категориями, живой поиск и мягкие
-анимации (контурная заставка, появление карточек, плавные переходы).
+Каталог итальянских продуктов для HoReCa: **React + Vite** (статический сайт с
+пререндером ЧПУ-страниц) и **API** формы «Запросить прайс-лист» (`server/`:
+Node + SQLite + e-mail + Unisender).
 
-## Запуск
+## Источники контента (приоритет — оригинальные материалы)
 
-> ⚠️ Все команды выполняются **внутри папки `dolce-salato/`** — здесь лежит
-> `package.json`. Если запустить `npm install` уровнем выше, будет ошибка
-> `ENOENT: package.json`.
+| Что | Откуда |
+|-----|--------|
+| Категории: названия, количество, порядок, вложенность | PDF «catalogo febbraio 2025 вариант 2.pdf» (содержание, стр. 5) |
+| Обложки категорий | вводные изображения в начале каждой категории PDF (у «Фарро» и «Трюфеля» вводной обложки нет — взято первое фото раздела; у «Оливкового масла» и «Уксуса» — обложка «Заправок» / фото первого товара) |
+| Товары (276), фото, фасовка, описания, производители | тот же PDF |
+| Логотип | `LOGO DEFINITIVO.pdf` → `src/assets/logo.svg` |
+| Иллюстрации баннера | `flyer/postcard 1.pdf`, `postcard 2.pdf` → `src/assets/hero-*.svg` |
+
+Все данные — в `src/data/menu.json`, фото — `public/images/catalog/<категория>/<товар>.jpg`,
+обложки — `public/images/categories/`.
+
+## URL
+
+```
+/                                    главная
+/catalog/                            каталог (+ ?q= поиск)
+/catalog/<категория>/                категория
+/catalog/<категория>/<товар>-optom/  товар
+/dostavka/  /privacy/
+```
+Старые `/katalog/…` → 301 на `/catalog/…` (nginx, `deploy/nginx.conf`) и
+клиентский редирект.
+
+## Фронтенд
 
 ```bash
-cd dolce-salato     # ← обязательно зайдите в эту папку
 npm install
-npm run dev         # дев-сервер (http://localhost:5173)
-npm run build       # сборка в dist/
-npm run preview     # предпросмотр собранной версии
+npm run dev       # http://localhost:5173  (/api проксируется на :3001)
+npm run build     # dist/ + статические ЧПУ-страницы + sitemap.xml
 ```
 
-Требуется Node.js 18+.
+## API формы (`server/`)
 
-## Публикация на GitHub Pages
+Каждая заявка:
+1. сохраняется в SQLite (`contacts` — карточка по e-mail с именем, компанией,
+   телефоном; `requests` — история заявок с категориями и датой;
+   `contact_segments` — `main` + id выбранных категорий);
+2. уходит письмом менеджеру (SMTP);
+3. синхронизируется с **Unisender**: основной список + списки-сегменты по
+   категориям (контакт может быть в нескольких), категории дублируются тегами,
+   телефон и компания пишутся в карточку.
 
-В проект включён авто-деплой — `.github/workflows/deploy.yml`.
-
-1. Создайте репозиторий и залейте туда содержимое **этой папки** (`dolce-salato/`)
-   так, чтобы `package.json` и папка `.github/` лежали в корне репозитория:
-   ```bash
-   cd dolce-salato
-   git init
-   git add .
-   git commit -m "Dolce&Salato menu"
-   git branch -M main
-   git remote add origin https://github.com/USERNAME/REPO.git
-   git push -u origin main
-   ```
-2. В репозитории откройте **Settings → Pages → Build and deployment** и в поле
-   **Source** выберите **GitHub Actions**.
-3. Каждый `git push` в `main` пересобирает сайт и публикует его на
-   `https://USERNAME.github.io/REPO/`.
-
-Воркфлоу сам подставляет правильный `base` (= имя репозитория), поэтому стили и
-картинки грузятся корректно. Если соберёте вручную — задайте `base` сами:
 ```bash
-BASE="/REPO/" npm run build
-```
-Для собственного домена или корневого сайта (`USERNAME.github.io`) `base`
-указывать не нужно — оставьте `npm run build`.
-
-## Структура
-
-```
-dolce-salato/
-├─ index.html                 # точка входа + SEO-плейсхолдеры (%TITLE% и т.д.)
-├─ vite.config.js             # React + плагин SEO-пререндера
-├─ scripts/
-│  ├─ seo.mjs                 # Schema.org (JSON-LD), мета, статичный каталог для роботов
-│  └─ gen-sitemap.mjs         # генерация public/sitemap.xml из данных
-├─ public/
-│  ├─ robots.txt              # директивы для Яндекса (Clean-param, Sitemap)
-│  ├─ sitemap.xml             # карта сайта
-│  └─ images/                 # реальные фото продуктов (<id>.jpg) + og-cover.jpg
-└─ src/
-   ├─ main.jsx                # монтирование приложения
-   ├─ App.jsx                 # оболочка: интро, сайдбар, секции, поиск, scroll-spy
-   ├─ index.css               # вся дизайн-система (цвет, типографика, сетка)
-   ├─ data/
-   │  └─ menu.json            # ЕДИНЫЙ источник: контент + SEO-поля (site, contact)
-   └─ components/
-      ├─ Intro.jsx            # заставка: спагетти навивается на вилку
-      ├─ Sidebar.jsx          # боковое меню, поиск, контакты
-      ├─ CategorySection.jsx  # секция категории + сетка карточек
-      ├─ ProductCard.jsx      # карточка продукта (фото/плейсхолдер)
-      ├─ SearchResults.jsx    # результаты поиска по всему каталогу
-      ├─ Foot.jsx             # подвал с контактами
-      └─ useReveal.js         # хук появления при скролле
+cd server
+npm install
+cp .env.example .env            # SMTP, ADMIN_TOKEN, UNISENDER_API_KEY
+npm run unisender:setup         # один раз: создаст списки и выведет строки для .env
+npm start                       # API на 127.0.0.1:3001
+npm run sync                    # повторная отправка в Unisender (cron)
+npm run export -- pasta > pasta.csv   # CSV сегмента; --segments — счётчики
+npm test
 ```
 
-## Контент
+Выгрузка через HTTP: `GET /api/admin/contacts.csv?segment=main` с заголовком
+`Authorization: Bearer <ADMIN_TOKEN>`.
 
-Весь контент — в `src/data/menu.json`. Чтобы добавить продукт, допишите объект
-в массив `products` нужной категории:
+## Деплой на VPS
 
-```json
-{
-  "id": "novyi-produkt",
-  "name_ru": "Название",
-  "name_it": "Nome italiano",
-  "producer": "Производитель",
-  "format": "500 г",
-  "desc_ru": "Короткое описание.",
-  "pairing": "С чем сочетается (опционально)"
-}
-```
+- `npm run build`, содержимое `dist/` → `/var/www/dolcesalato/dist`
+- `server/` → `/var/www/dolcesalato/server`, `.env`, systemd: `deploy/dolcesalato-api.service`
+- nginx: `deploy/nginx.conf` (статика, `/api` → :3001, 301 со старых адресов)
+- Node ≥ 22.9
 
-Поля `producer`, `format`, `desc_ru`, `pairing` — необязательные.
+## Перед запуском
 
-## Фотографии
-
-Все фото продуктов **извлечены из исходного PDF-каталога** и лежат в
-`public/images/<id>.jpg` (имя файла = `id` продукта из `menu.json`). Карточка
-сама подхватывает фото; если файла нет — показывается элегантный плейсхолдер.
-Чтобы заменить снимок — положите свой файл с тем же именем. Рекомендуемое
-соотношение 3:2; фон любой (карточка аккуратно вписывает изображение).
-
-## SEO (оптимизация под Яндекс)
-
-Заложена основа для индексации одностраничного приложения:
-
-- **Мета-теги** — `title`, `description`, `keywords`, `canonical`, `robots`,
-  `theme-color`. Значения берутся из блока `site` в `menu.json` и
-  подставляются в `index.html` плагином при сборке.
-- **Open Graph + Twitter Card** — корректные превью в мессенджерах и соцсетях
-  (обложка `images/og-cover.jpg`, 1200×630).
-- **Schema.org (JSON-LD)** — `Organization`, `WebSite` (со строкой поиска
-  Sitelinks Search Box) и `ItemList` со всеми товарами (`Product` с изображением,
-  описанием, брендом). Генерируется в `scripts/seo.mjs`.
-- **Статичный каталог для роботов** — полный список категорий и товаров с `alt`
-  у изображений вшивается в `<noscript>`, поэтому контент индексируется даже без
-  выполнения JavaScript. Пользователи с JS его не видят (без мерцания).
-- **robots.txt** — `Clean-param` для Яндекса (отсечение UTM-дублей) и ссылка на
-  карту сайта.
-- **sitemap.xml** — карта сайта; пересоздать: `node scripts/gen-sitemap.mjs`.
-
-### Что сделать перед публикацией
-
-1. В `src/data/menu.json` → `site`:
-   - укажите реальный `url` (с завершающим `/`);
-   - вставьте код подтверждения в `yandex_verification` (Яндекс.Вебмастер →
-     «Настройка» → мета-тег).
-2. Проверьте/обновите домен в `public/robots.txt` и `public/sitemap.xml`.
-3. После деплоя добавьте сайт в **Яндекс.Вебмастер**, отправьте `sitemap.xml`,
-   проверьте микроразметку в валидаторе structured data.
-4. `npm run build` — мета и JSON-LD попадут в итоговый `dist/index.html`.
-
-## Дизайн-система (`src/index.css`)
-
-| Токен | Значение | Назначение |
-|-------|----------|------------|
-| `--paper` | `#F4EFE6` | кремовый фон |
-| `--ink` | `#211C17` | тёплый чёрный текст |
-| `--ink-soft` | `#6B6358` | итальянские подзаголовки |
-| `--line` | `#D8CFBF` | волосяные линии |
-| `--accent` | `#5E6B4F` | оливковый акцент |
-
-Шрифты: **Cormorant Garamond** (дисплей) + **EB Garamond** (текст),
-подключены через Google Fonts в `index.html`.
-
-## Анимации
-
-- **Заставка** — тонкий контур «прорисовывает» вордмарк и вилку, затем заливка.
-  Пропуск по клику или кнопке «Войти».
-- **Карточки** появляются с лёгким подъёмом при попадании в зону видимости.
-- **Боковое меню** — плавная подсветка активной категории (scroll-spy) и мягкий
-  скролл к секции.
-- Уважается `prefers-reduced-motion`.
+- реквизиты оператора ПДн на странице `/privacy/` (`src/pages/PrivacyPage.jsx`);
+- код Яндекс.Вебмастера — `site.yandex_verification` в `menu.json`.

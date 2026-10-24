@@ -1,124 +1,129 @@
-import { useState, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useRoute, navigate } from './router.jsx';
-import Intro from './components/Intro.jsx';
+import { useLang } from './i18n.jsx';
+import Header, { LangSwitch, SearchBox } from './components/Header.jsx';
 import Sidebar from './components/Sidebar.jsx';
-import SearchResults from './components/SearchResults.jsx';
+import Footer from './components/Footer.jsx';
 import PriceModal from './components/PriceModal.jsx';
 import HomePage from './pages/HomePage.jsx';
 import CatalogPage from './pages/CatalogPage.jsx';
 import CategoryPage from './pages/CategoryPage.jsx';
 import ProductPage from './pages/ProductPage.jsx';
+import DeliveryPage from './pages/DeliveryPage.jsx';
+import PrivacyPage from './pages/PrivacyPage.jsx';
 import NotFoundPage from './pages/NotFoundPage.jsx';
 
 export default function App({ data }) {
-  const [intro, setIntro] = useState(true);
   const route = useRoute(data);
-  const [query, setQuery] = useState('');
-  const [navOpen, setNavOpen] = useState(false);
-  const [req, setReq] = useState({ open: false, product: null });
-  const [activeAnchor, setActiveAnchor] = useState('top');
-  const searching = query.trim().length > 0;
+  const { name } = useLang();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [modal, setModal] = useState(null); // { preset: [catIds], product }
 
-  /* при смене маршрута — наверх, сбросить поиск и мобильное меню */
+  /* смена маршрута: наверх (или к якорю), закрыть меню, обновить <title> */
   useEffect(() => {
-    setQuery('');
-    setNavOpen(false);
-    window.scrollTo(0, 0);
-  }, [route]);
+    setMenuOpen(false);
+    const hash = window.location.hash.slice(1);
+    if (hash) setTimeout(() => document.getElementById(hash)?.scrollIntoView({ behavior: 'smooth' }), 60);
+    else window.scrollTo(0, 0);
 
-  /* scroll-spy для якорей главной */
+    const s = data.site;
+    const titles = {
+      home: s.title_ru,
+      catalog: 'Каталог итальянских продуктов оптом — Dolce&Salato',
+      category: route.cat && `${route.cat.name_ru} оптом — купить для ресторана | Dolce&Salato`,
+      product: route.product && `${route.product.name_ru} оптом — ${route.cat.name_ru} | Dolce&Salato`,
+      delivery: 'Доставка — Dolce&Salato',
+      privacy: 'Политика обработки персональных данных — Dolce&Salato',
+      notfound: 'Страница не найдена — Dolce&Salato',
+    };
+    document.title = titles[route.page] || s.title_ru;
+  }, [route, data]);
+
   useEffect(() => {
-    if (route.page !== 'home' || searching) return;
-    const ids = ['o-nas', 'dostavka', 'katalog', 'pricelist', 'contacts'];
-    const secs = ids.map((id) => document.getElementById(id)).filter(Boolean);
-    if (!secs.length) return;
-    const io = new IntersectionObserver(
-      (entries) =>
-        entries.forEach((e) => {
-          if (e.isIntersecting) setActiveAnchor(e.target.id);
-        }),
-      { rootMargin: '-40% 0px -55% 0px', threshold: 0 }
-    );
-    secs.forEach((s) => io.observe(s));
-    return () => io.disconnect();
-  }, [route.page, searching]);
+    document.body.classList.toggle('menu-open', menuOpen);
+  }, [menuOpen]);
 
-  /* якорная навигация гибридного одностраничника */
-  const onAnchor = (id) => {
-    setNavOpen(false);
-    if (query) setQuery('');
-    const scroll = () => {
-      if (id === 'top') {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+  const onAnchor = useCallback(
+    (id) => {
+      setMenuOpen(false);
+      if (route.page !== 'home') {
+        navigate('/#' + id);
         return;
       }
-      const el = document.getElementById(id);
-      if (el) {
-        const y = el.getBoundingClientRect().top + window.pageYOffset;
-        window.scrollTo({ top: y, behavior: 'smooth' });
-      }
-    };
-    if (route.page !== 'home') {
-      navigate('/');
-      setTimeout(scroll, 130);
-    } else {
-      scroll();
-    }
-  };
+      document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+      window.history.replaceState({}, '', '#' + id);
+    },
+    [route.page]
+  );
 
-  const openRequest = (product) => setReq({ open: true, product: product || null });
+  const openPrice = useCallback((preset = [], product = null) => {
+    setMenuOpen(false);
+    setModal({ preset: Array.isArray(preset) ? preset : [], product });
+  }, []);
 
-  let pageEl;
-  if (searching) {
-    pageEl = <SearchResults data={data} query={query} onRequest={openRequest} />;
-  } else if (route.page === 'catalog') {
-    pageEl = <CatalogPage data={data} />;
-  } else if (route.page === 'category') {
-    pageEl = <CategoryPage data={data} cat={route.cat} onRequest={openRequest} />;
-  } else if (route.page === 'product') {
-    pageEl = <ProductPage data={data} cat={route.cat} product={route.product} />;
-  } else if (route.page === 'notfound') {
-    pageEl = <NotFoundPage />;
-  } else {
-    pageEl = <HomePage data={data} onAnchor={onAnchor} />;
+  let page;
+  switch (route.page) {
+    case 'home':
+      page = <HomePage data={data} onPrice={openPrice} />;
+      break;
+    case 'catalog':
+      page = <CatalogPage data={data} q={route.q} onPrice={openPrice} />;
+      break;
+    case 'category':
+      page = <CategoryPage key={route.cat.id} data={data} cat={route.cat} onPrice={openPrice} />;
+      break;
+    case 'product':
+      page = <ProductPage key={route.product.slug} data={data} cat={route.cat} product={route.product} onPrice={openPrice} />;
+      break;
+    case 'delivery':
+      page = <DeliveryPage data={data} onPrice={openPrice} />;
+      break;
+    case 'privacy':
+      page = <PrivacyPage data={data} />;
+      break;
+    case 'redirect':
+      page = null;
+      break;
+    default:
+      page = <NotFoundPage />;
   }
 
   return (
     <>
-      {intro && <Intro onDone={() => setIntro(false)} />}
+      <a className="skip" href="#main">
+        Перейти к содержанию
+      </a>
+      <Header data={data} onPrice={openPrice} onMenu={() => setMenuOpen((v) => !v)} menuOpen={menuOpen} />
 
-      <div className="topbar">
-        <span className="tb-brand">
-          Dolce<span className="amp">&amp;</span>Salato
-        </span>
-        <button className="menu-btn" onClick={() => setNavOpen((v) => !v)}>
-          {navOpen ? 'Закрыть' : 'Меню'}
-        </button>
+      <div className="layout">
+        <Sidebar data={data} route={route} onAnchor={onAnchor} onPrice={openPrice} className="sb-desktop" />
+        <main id="main" className="main">
+          {page}
+        </main>
       </div>
 
-      <button className="btn-price fab" onClick={() => openRequest()}>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M9 4h7l3 3v13H5V4z" />
-          <path d="M9 11h7M9 15h5" />
-        </svg>
-        Прайс-лист
-      </button>
+      <Footer data={data} onAnchor={onAnchor} />
 
-      {req.open && <PriceModal data={data} product={req.product} onClose={() => setReq({ open: false, product: null })} />}
-
-      <div className="app">
+      {/* мобильное меню */}
+      <div className={'drawer' + (menuOpen ? ' open' : '')} aria-hidden={!menuOpen}>
+        <div className="drawer-top">
+          <SearchBox data={data} onDone={() => setMenuOpen(false)} />
+          <LangSwitch />
+        </div>
         <Sidebar
           data={data}
           route={route}
-          activeAnchor={activeAnchor}
-          query={query}
-          setQuery={setQuery}
-          open={navOpen}
           onAnchor={onAnchor}
-          onPriceOpen={() => openRequest()}
+          onPrice={openPrice}
+          onNavigate={() => setMenuOpen(false)}
+          className="sb-mobile"
         />
-        <main className="main">{pageEl}</main>
       </div>
+      <div className={'drawer-shade' + (menuOpen ? ' open' : '')} onClick={() => setMenuOpen(false)} />
+
+      {modal && (
+        <PriceModal data={data} preset={modal.preset} product={modal.product} onClose={() => setModal(null)} />
+      )}
     </>
   );
 }

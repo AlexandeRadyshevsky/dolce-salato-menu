@@ -54,4 +54,7 @@ function seoRoutePages() {
 export default defineConfig({
   base: process.env.BASE || '/',
   plugins: [react(), seoPrerender(), seoRoutePages()],
+  // локально: API формы (server/) на :3001
+  server: { proxy: { '/api': 'http://127.0.0.1:3001' } },
+  preview: { proxy: { '/api': 'http://127.0.0.1:3001' } },
 });

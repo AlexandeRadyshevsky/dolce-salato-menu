@@ -1,68 +1,108 @@
 import { Link } from '../router.jsx';
+import { useLang } from '../i18n.jsx';
+import { asset, catPath, countOf, coverOf, plural, productPath } from '../lib/catalog.js';
+import useReveal from './useReveal.js';
+import { IconArrow } from './Icons.jsx';
 
-/* Акцентные цвета категорий — тёплое разнообразие поверх зелёной базы */
-export const CAT_ACCENTS = ['#C8922E', '#B5532E', '#5E6B4F', '#3B5A45', '#A9762F'];
-export const catAccent = (i) => CAT_ACCENTS[i % CAT_ACCENTS.length];
-
-export function plural(n) {
-  const m10 = n % 10;
-  const m100 = n % 100;
-  if (m10 === 1 && m100 !== 11) return 'позиция';
-  if (m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14)) return 'позиции';
-  return 'позиций';
+export function Reveal({ as: Tag = 'div', className = '', delay = 0, children, ...rest }) {
+  const [ref, seen] = useReveal();
+  return (
+    <Tag ref={ref} className={'reveal ' + (seen ? 'in ' : '') + className} style={{ '--d': delay + 'ms' }} {...rest}>
+      {children}
+    </Tag>
+  );
 }
 
-/* ---------- хлебные крошки ---------- */
+export function Eyebrow({ children, className = '' }) {
+  return <div className={'eyebrow ' + className}>{children}</div>;
+}
+
 export function Crumbs({ items }) {
   return (
-    <nav className="crumbs" aria-label="Хлебные крошки">
+    <nav className="crumbs" aria-label="Breadcrumbs">
       {items.map((it, i) => (
-        <span key={i} style={{ display: 'contents' }}>
+        <span key={i}>
           {i > 0 && <span className="cr-sep">/</span>}
-          {it.to != null ? (
-            <Link to={it.to}>{it.label}</Link>
-          ) : (
-            <span className="cr-here">{it.label}</span>
-          )}
+          {it.to != null ? <Link to={it.to}>{it.label}</Link> : <span className="cr-here">{it.label}</span>}
         </span>
       ))}
     </nav>
   );
 }
 
-/* ---------- плитки категорий ---------- */
-export function CatTiles({ data }) {
+export function useCount() {
+  const { t } = useLang();
+  return (n) => n + ' ' + t(plural(n, ['позиция', 'позиции', 'позиций']), n === 1 ? 'prodotto' : 'prodotti');
+}
+
+/* Плитка категории: обложка из PDF-каталога + название + стрелка */
+export function CategoryTile({ data, cat, delay = 0, showCount }) {
+  const { name } = useLang();
+  const count = useCount();
+  const img = coverOf(data, cat);
   return (
-    <div className="cat-tiles">
-      {data.categories.map((c, i) => (
-        <Link key={c.id} className="cat-tile" to={'/katalog/' + c.slug} style={{ '--cat-accent': catAccent(i) }}>
-          <span className="ct-name">{c.name_ru}</span>
-          <span className="ct-it">{c.name_it}</span>
-          <span className="ct-count">
-            {c.products.length} {plural(c.products.length)}
+    <Reveal as="div" className="cat-tile-wrap" delay={delay}>
+      <Link to={catPath(cat)} className="cat-tile">
+        <span className="ct-img">{img && <img src={img} alt={cat.name_ru} loading="lazy" />}</span>
+        <span className="ct-body">
+          <span className="ct-name">
+            {name(cat)}
+            {showCount && <small>{count(countOf(data, cat))}</small>}
           </span>
-          <svg className="ct-arrow" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-            <path d="M5 12h14M13 6l6 6-6 6" />
-          </svg>
-        </Link>
+          <span className="arrow-circle">
+            <IconArrow size={15} />
+          </span>
+        </span>
+      </Link>
+    </Reveal>
+  );
+}
+
+export function CategoryGrid({ data, cats, showCount }) {
+  return (
+    <div className="cat-grid">
+      {cats.map((c, i) => (
+        <CategoryTile key={c.id} data={data} cat={c} delay={(i % 5) * 60} showCount={showCount} />
       ))}
     </div>
   );
 }
 
-/* ---------- заголовок секции ---------- */
-export function SectionHead({ num, ru, it, accent }) {
+/* Карточка товара в сетке категории */
+export function ProductCard({ cat, product, onPrice, delay = 0 }) {
+  const { t, name, lang } = useLang();
+  const to = productPath(cat, product);
   return (
-    <div className="section-head">
-      <div className="sh-left">
-        {num && (
-          <span className="section-num" style={accent ? { color: accent } : null}>
-            {num}
-          </span>
+    <Reveal as="article" className="p-card" delay={delay}>
+      <Link to={to} className="p-img" tabIndex={-1} aria-hidden="true">
+        {product.image ? (
+          <img src={asset(product.image)} alt="" loading="lazy" />
+        ) : (
+          <span className="p-ph">{cat.name_it}</span>
         )}
-        <h3>{ru}</h3>
-        {it && <span className="sh-it">{it}</span>}
+      </Link>
+      <div className="p-body">
+        {product.producer && <div className="p-producer">{product.producer}</div>}
+        <h3 className="p-name">
+          <Link to={to}>{name(product)}</Link>
+        </h3>
+        {product.name_it && lang === 'ru' && <div className="p-it">{product.name_it}</div>}
+        <div className="p-meta">
+          {(product.format || (product.pack && product.pack[0])) && (
+            <span className="p-fmt">{product.format || product.pack.join(' · ')}</span>
+          )}
+        </div>
+        <div className="p-actions">
+          <button className="btn btn-outline btn-sm" onClick={() => onPrice([cat.id], product)}>
+            {t('Узнать цену', 'Chiedi il prezzo')}
+          </button>
+          <Link to={to} className="p-more" aria-label={t('Подробнее', 'Dettagli')}>
+            <span className="arrow-circle">
+              <IconArrow size={15} />
+            </span>
+          </Link>
+        </div>
       </div>
-    </div>
+    </Reveal>
   );
 }

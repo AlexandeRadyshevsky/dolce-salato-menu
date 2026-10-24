@@ -1,51 +1,100 @@
-import { Crumbs, SectionHead, catAccent } from '../components/ui.jsx';
-import RequestForm from '../components/RequestForm.jsx';
-import useImageProbe from '../components/useImageProbe.js';
+import { useLang } from '../i18n.jsx';
+import { asset, categoryById, catPath } from '../lib/catalog.js';
+import { Crumbs, Eyebrow, ProductCard } from '../components/ui.jsx';
+import { IconArrow } from '../components/Icons.jsx';
 
-/* Страница товара (ЧПУ со словом «оптом»):
-   фото, описание и форма быстрого запроса именно об этом продукте. */
-export default function ProductPage({ data, cat, product }) {
-  const idx = data.categories.indexOf(cat);
-  const accent = catAccent(idx);
-  const src = import.meta.env.BASE_URL + 'images/' + product.id + '.jpg';
-  const imgOk = useImageProbe(src);
+/* Страница товара: /catalog/<категория>/<товар>-optom/ */
+export default function ProductPage({ data, cat, product, onPrice }) {
+  const { t, name, lang } = useLang();
+  const parent = cat.parent ? categoryById(data, cat.parent) : null;
+  const producerText = product.producer && data.producers ? data.producers[product.producer] : null;
+  const related = cat.products.filter((p) => p !== product).slice(0, 4);
+
+  const facts = [
+    [t('Фасовка', 'Formato'), product.format],
+    [t('Упаковка', 'Confezione'), product.pack && product.pack.join(' · ')],
+    [t('Характеристики', 'Caratteristiche'), product.spec],
+    [t('Хранение', 'Conservazione'), product.storage],
+    [t('Производитель', 'Produttore'), product.producer],
+  ].filter(([, v]) => v);
 
   return (
-    <div className="prod-page" style={{ '--cat-accent': accent }} data-screen-label={'Товар: ' + product.name_ru}>
+    <div className="page">
       <Crumbs
         items={[
-          { label: 'Главная', to: '/' },
-          { label: 'Каталог', to: '/katalog' },
-          { label: cat.name_ru, to: '/katalog/' + cat.slug },
-          { label: product.name_ru },
+          { label: t('Главная', 'Home'), to: '/' },
+          { label: t('Каталог', 'Catalogo'), to: '/catalog' },
+          ...(parent ? [{ label: name(parent), to: catPath(parent) }] : []),
+          { label: name(cat), to: catPath(cat) },
+          { label: name(product) },
         ]}
       />
 
-      <div className="prod-layout">
-        <div className="prod-photo">
-          {imgOk ? <img src={src} alt={product.name_ru} /> : <span className="ph-cap">{cat.name_it}</span>}
+      <article className="prod">
+        <div className="prod-img">
+          {product.image ? <img src={asset(product.image)} alt={product.name_ru + ' — ' + (product.name_it || '')} /> : null}
         </div>
         <div className="prod-info">
-          {product.producer && <div className="producer">{product.producer}</div>}
-          <h1>{product.name_ru}</h1>
-          <div className="name-it">{product.name_it}</div>
-          {product.desc_ru && <p className="desc">{product.desc_ru}</p>}
-          {product.pairing && (
-            <p className="pairing">
-              <b>Сочетания —</b> {product.pairing}
-            </p>
+          <Eyebrow>{name(cat)}</Eyebrow>
+          <h1 className="h2">{name(product)}</h1>
+          {product.name_it && <div className="prod-alt">{lang === 'ru' ? product.name_it : product.name_ru}</div>}
+          {product.subtitle_ru && <p className="prod-sub">{product.subtitle_ru}</p>}
+
+          {facts.length > 0 && (
+            <dl className="facts">
+              {facts.map(([k, v]) => (
+                <div key={k}>
+                  <dt>{k}</dt>
+                  <dd>{v}</dd>
+                </div>
+              ))}
+            </dl>
           )}
-          {product.format && (
-            <div className="format" style={{ marginBottom: 34 }}>
-              <span className="fmt-line" style={{ background: accent }} />
-              <span className="label">{product.format}</span>
+
+          {product.desc_ru && (
+            <div className="prod-text">
+              <h2>{t('Описание', 'Descrizione')}</h2>
+              <p>{product.desc_ru}</p>
+            </div>
+          )}
+          {product.usage_ru && (
+            <div className="prod-text">
+              <h2>{t('Применение', 'Utilizzo')}</h2>
+              <p>{product.usage_ru}</p>
             </div>
           )}
 
-          <SectionHead ru="Запросить информацию" it="Richiedi informazioni" />
-          <RequestForm data={data} product={product} compact />
+          <div className="prod-cta">
+            <button className="btn btn-red" onClick={() => onPrice([cat.id], product)}>
+              {t('Запросить цену оптом', 'Richiedi il prezzo all’ingrosso')} <IconArrow size={16} />
+            </button>
+            <a className="btn btn-outline" href={'tel:' + data.contact.phone.replace(/[^+\d]/g, '')}>
+              {data.contact.phone}
+            </a>
+          </div>
         </div>
-      </div>
+      </article>
+
+      {producerText && (
+        <section className="producer">
+          <Eyebrow>{t('О производителе', 'Il produttore')}</Eyebrow>
+          <h2 className="h3">{product.producer}</h2>
+          <p>{producerText}</p>
+        </section>
+      )}
+
+      {related.length > 0 && (
+        <section className="related">
+          <div className="sec-head">
+            <h2 className="h3">{t('Ещё в категории', 'Altri prodotti')} «{name(cat)}»</h2>
+          </div>
+          <div className="p-grid">
+            {related.map((p, i) => (
+              <ProductCard key={p.slug} cat={cat} product={p} onPrice={onPrice} delay={i * 50} />
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 }

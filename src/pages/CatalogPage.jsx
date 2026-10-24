@@ -1,16 +1,48 @@
-import { Crumbs, CatTiles, SectionHead } from '../components/ui.jsx';
+import { useLang } from '../i18n.jsx';
+import { search, topCategories, totalProducts } from '../lib/catalog.js';
+import { CategoryGrid, Crumbs, Eyebrow, ProductCard, useCount } from '../components/ui.jsx';
 
-/* Страница каталога: все категории первого уровня. */
-export default function CatalogPage({ data }) {
+/* /catalog/ — все категории первого уровня (порядок PDF);
+   /catalog/?q=… — результаты поиска по товарам. */
+export default function CatalogPage({ data, q, onPrice }) {
+  const { t } = useLang();
+  const count = useCount();
+  const results = q ? search(data, q, 200) : null;
+
   return (
-    <section className="section prod-page" style={{ borderBottom: 'none' }} data-screen-label="Каталог — все категории">
-      <Crumbs items={[{ label: 'Главная', to: '/' }, { label: 'Каталог' }]} />
-      <SectionHead ru="Каталог" it="Catalogo" />
-      <p style={{ maxWidth: '62ch', marginTop: -22, marginBottom: 38, color: 'var(--ink-soft)' }}>
-        Итальянские продукты оптом для ресторанов, отелей и кафе — {data.categories.length} категорий, от оливкового
-        масла до праздничной выпечки.
-      </p>
-      <CatTiles data={data} />
-    </section>
+    <div className="page">
+      <Crumbs items={[{ label: t('Главная', 'Home'), to: '/' }, { label: t('Каталог', 'Catalogo') }]} />
+      <header className="page-head">
+        <Eyebrow>{t('Каталог', 'Catalogo')}</Eyebrow>
+        {results ? (
+          <>
+            <h1 className="h2">
+              {t('Поиск: ', 'Ricerca: ')}«{q}»
+            </h1>
+            <p className="page-lead">{results.length ? count(results.length) : t('Ничего не найдено', 'Nessun risultato')}</p>
+          </>
+        ) : (
+          <>
+            <h1 className="h2">{t('Итальянские продукты оптом', 'Prodotti italiani all’ingrosso')}</h1>
+            <p className="page-lead">
+              {t(
+                `${totalProducts(data)} позиций в ${data.categories.length} категориях — от оливкового масла до праздничной выпечки.`,
+                `${totalProducts(data)} prodotti in ${data.categories.length} categorie — dall’olio d’oliva ai dolci delle feste.`
+              )}
+            </p>
+          </>
+        )}
+      </header>
+
+      {results ? (
+        <div className="p-grid">
+          {results.map((r, i) => (
+            <ProductCard key={r.cat.id + r.product.slug} cat={r.cat} product={r.product} onPrice={onPrice} delay={(i % 4) * 50} />
+          ))}
+        </div>
+      ) : (
+        <CategoryGrid data={data} cats={topCategories(data)} showCount />
+      )}
+    </div>
   );
 }

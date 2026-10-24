@@ -1,12 +1,14 @@
 import { useEffect } from 'react';
-import RequestForm from './RequestForm.jsx';
+import { useLang } from '../i18n.jsx';
+import PriceForm from './PriceForm.jsx';
+import { IconClose } from './Icons.jsx';
 
-/* Модальная обёртка формы запроса: прайс-лист или конкретный товар. */
-export default function PriceModal({ data, product, onClose }) {
+/* Модальное окно «Запросить прайс-лист».
+   preset — категории, отмеченные заранее (с какой страницы открыли). */
+export default function PriceModal({ data, preset, product, onClose }) {
+  const { t, name } = useLang();
   useEffect(() => {
-    const onKey = (e) => {
-      if (e.key === 'Escape') onClose();
-    };
+    const onKey = (e) => e.key === 'Escape' && onClose();
     document.addEventListener('keydown', onKey);
     document.body.style.overflow = 'hidden';
     return () => {
@@ -16,25 +18,23 @@ export default function PriceModal({ data, product, onClose }) {
   }, [onClose]);
 
   return (
-    <div
-      className="modal-backdrop"
-      onMouseDown={(e) => {
-        if (e.target === e.currentTarget) onClose();
-      }}
-    >
-      <div className="modal" role="dialog" aria-modal="true" aria-label={product ? 'Запрос по товару' : 'Запросить прайс-лист'}>
-        <button className="md-close" onClick={onClose} aria-label="Закрыть">
-          ×
+    <div className="modal-backdrop" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
+      <div className="modal" role="dialog" aria-modal="true" aria-labelledby="pm-title">
+        <button className="modal-close" onClick={onClose} aria-label={t('Закрыть', 'Chiudi')}>
+          <IconClose />
         </button>
-        <div className="md-kicker label">Сотрудничество · Collaborazione</div>
-        <h3>{product ? 'Запрос по товару' : 'Запросить прайс-лист'}</h3>
-        <div className="md-it">{product ? 'Richiesta informazioni prodotto' : 'Richiedi il listino prezzi'}</div>
-        <p className="md-lead">
+        <div className="eyebrow">{t('Каталог и цены', 'Catalogo e prezzi')}</div>
+        <h3 id="pm-title">{t('Запросить прайс-лист', 'Richiedi il listino')}</h3>
+        <p className="modal-lead">
           {product
-            ? 'Оставьте контакты — расскажем о товаре, ценах и условиях поставки.'
-            : 'Оставьте контакты — пришлём актуальные цены и условия поставки для вашего заведения.'}
+            ? t('Товар: ', 'Prodotto: ') + name(product) + '. '
+            : ''}
+          {t(
+            'Получите актуальный каталог и специальные условия для вашего бизнеса.',
+            'Ricevi il catalogo aggiornato e condizioni speciali per il tuo business.'
+          )}
         </p>
-        <RequestForm data={data} product={product} compact />
+        <PriceForm data={data} preset={preset} product={product} variant="modal" />
       </div>
     </div>
   );

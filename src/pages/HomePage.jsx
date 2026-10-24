@@ -1,99 +1,131 @@
 import { Link } from '../router.jsx';
-import { CatTiles, SectionHead } from '../components/ui.jsx';
-import RequestForm from '../components/RequestForm.jsx';
-import Foot from '../components/Foot.jsx';
+import { useLang } from '../i18n.jsx';
+import { topCategories } from '../lib/catalog.js';
+import HeroSlider from '../components/HeroSlider.jsx';
+import PriceForm from '../components/PriceForm.jsx';
+import { OliveBranch } from '../components/Art.jsx';
+import { CategoryGrid, Eyebrow, Reveal } from '../components/ui.jsx';
+import {
+  IconArrow,
+  IconBulb,
+  IconChart,
+  IconHandshake,
+  IconLifebuoy,
+  IconMedal,
+  IconPin,
+  IconQuality,
+  IconTruck,
+} from '../components/Icons.jsx';
 
-/* Главная — гибридный одностраничник:
-   герой → О нас → Доставка → Каталог (плитки) → Прайс-лист (форма) → Контакты */
-export default function HomePage({ data, onAnchor }) {
+export default function HomePage({ data, onPrice }) {
+  const { t } = useLang();
+
+  const strengths = [
+    [IconQuality, 'Качество', 'Qualità', 'Тщательный отбор и прямая связь с производителями.', 'Selezione accurata e rapporto diretto con i produttori.'],
+    [IconBulb, 'Инновации', 'Innovazione', 'Решения для любых форматов и потребностей клиентов.', 'Soluzioni per ogni formato ed esigenza.'],
+    [IconHandshake, 'Надёжность', 'Affidabilità', 'Мы всегда держим слово и отвечаем за результат.', 'Manteniamo sempre la parola data.'],
+    [IconLifebuoy, 'Поддержка клиентов', 'Assistenza', 'Наши менеджеры на связи 24/7.', 'I nostri manager sono disponibili 24/7.'],
+    [IconMedal, 'Репутация', 'Reputazione', 'Бренд, признанный в HoReCa по всей России.', 'Un marchio riconosciuto nell’HoReCa in tutta la Russia.'],
+    [IconChart, 'Оптимизация затрат', 'Ottimizzazione dei costi', 'Помогаем снизить food cost на 10–30%.', 'Aiutiamo a ridurre il food cost del 10–30%.'],
+  ];
+
   return (
     <>
-      <section className="hero" id="top" data-screen-label="Главная">
-        <div className="hero-kicker label">Дистрибьютор итальянских продуктов · HoReCa</div>
-        <h2 className="hero-brand">
-          Dolce<span className="amp">&amp;</span>Salato
-        </h2>
-        <div className="hero-sub">food solution</div>
-        <p className="hero-body">{data.brand.intro_ru}</p>
-        <p className="hero-it">{data.brand.intro_it}</p>
-        <div className="hero-cta">
-          <button className="btn-price hero-cta" style={{ marginTop: 0 }} onClick={() => onAnchor('pricelist')}>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M9 4h7l3 3v13H5V4z" />
-              <path d="M9 11h7M9 15h5" />
-            </svg>
-            Запросить прайс-лист <span className="pl-it">· Richiedi il listino</span>
-          </button>
-          <Link className="btn-ghost" to="/katalog">
-            Смотреть каталог
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-              <path d="M5 12h14M13 6l6 6-6 6" />
-            </svg>
+      <h1 className="sr-only">{data.site.title_ru}</h1>
+      <HeroSlider data={data} onPrice={onPrice} />
+
+      <section className="sec about" id="about">
+        <Reveal className="about-head">
+          <Eyebrow>{t('О компании', 'Chi siamo')}</Eyebrow>
+          <h2 className="h2">{t('Больше, чем просто поставщик', 'Più di un semplice fornitore')}</h2>
+        </Reveal>
+        <Reveal className="about-text" delay={80}>
+          <p>
+            {t(
+              'С 2008 года Dolce&Salato поставляет высококачественные итальянские продукты для ресторанов, отелей и предприятий HoReCa, предлагая комплексные решения и экспертную поддержку.',
+              'Dal 2008 Dolce&Salato fornisce prodotti italiani di alta qualità a ristoranti, hotel e HoReCa, offrendo soluzioni complete e supporto esperto.'
+            )}
+          </p>
+        </Reveal>
+        <Reveal className="about-text" delay={160}>
+          <p>
+            {t(
+              'Мы не просто доставляем продукты — мы помогаем создавать меню, подбирать лучшие ингредиенты, оптимизировать food cost и вдохновляем новым вкусам итальянской кухни.',
+              'Non ci limitiamo a consegnare prodotti: aiutiamo a creare menu, scegliere i migliori ingredienti, ottimizzare il food cost e ispiriamo con nuovi sapori della cucina italiana.'
+            )}
+          </p>
+        </Reveal>
+      </section>
+
+      <section className="sec strengths" id="strengths">
+        <Eyebrow>{t('Сильные стороны', 'Punti di forza')}</Eyebrow>
+        <div className="str-grid">
+          {strengths.map(([Icon, ru, it, dRu, dIt], i) => (
+            <Reveal key={ru} className="str-item" delay={i * 70}>
+              <Icon className="str-ico" />
+              <h3>{t(ru, it)}</h3>
+              <p>{t(dRu, dIt)}</p>
+            </Reveal>
+          ))}
+        </div>
+      </section>
+
+      <section className="sec cats" id="catalog">
+        <div className="sec-head">
+          <Eyebrow>{t('Категории каталога', 'Categorie del catalogo')}</Eyebrow>
+          <Link to="/catalog" className="link-arrow">
+            {t('Смотреть весь каталог', 'Vedi tutto il catalogo')} <IconArrow size={18} />
+          </Link>
+        </div>
+        <CategoryGrid data={data} cats={topCategories(data)} />
+        <Link to="/catalog" className="btn btn-outline btn-block cats-all">
+          {t('Смотреть весь каталог', 'Vedi tutto il catalogo')} <IconArrow size={16} />
+        </Link>
+      </section>
+
+      <section className="sec delivery" id="delivery">
+        <Eyebrow>{t('Доставка', 'Consegna')}</Eyebrow>
+        <div className="dl-row">
+          <Reveal className="dl-main">
+            <IconTruck size={56} sw={1.2} className="dl-truck" />
+            <h2 className="h3">{t('Быстро и надёжно по всей России', 'Consegna rapida e affidabile in tutta la Russia')}</h2>
+          </Reveal>
+          <Reveal className="dl-city" delay={80}>
+            <IconPin size={22} />
+            <div>
+              <b>{t('Москва', 'Mosca')}</b>
+              <p>{t('Доставка в пределах МКАД в течение 24 часов.', 'Consegna entro il raccordo MKAD in 24 ore.')}</p>
+            </div>
+          </Reveal>
+          <Reveal className="dl-city" delay={160}>
+            <IconPin size={22} />
+            <div>
+              <b>{t('Санкт-Петербург', 'San Pietroburgo')}</b>
+              <p>{t('Доставка во вторник и пятницу.', 'Consegna il martedì e il venerdì.')}</p>
+            </div>
+          </Reveal>
+          <Link to="/dostavka" className="link-arrow dl-more">
+            {t('Подробнее', 'Dettagli')} <IconArrow size={18} />
           </Link>
         </div>
       </section>
 
-      <section className="section" id="o-nas" data-screen-label="О нас">
-        <SectionHead num="01" ru={data.about.title_ru} it={data.about.title_it} />
-        <div className="about-grid">
-          <div className="about-col">
-            <span className="since">2008</span>
-            <p>{data.about.founded_ru}</p>
-          </div>
-          <div className="about-col">
-            <h4>
-              <em>Your</em> Food Solution
-            </h4>
-            <p>{data.about.solution_ru}</p>
-          </div>
-          <div className="about-col">
-            <h4>{data.about.tasting_title_ru}</h4>
-            <p>{data.about.tasting_ru}</p>
-          </div>
+      <section className="sec request" id="pricelist">
+        <OliveBranch />
+        <div className="rq-copy">
+          <Eyebrow className="light">{t('Каталог и цены', 'Catalogo e prezzi')}</Eyebrow>
+          <h2 className="h2">{t('Запросить прайс-лист', 'Richiedi il listino')}</h2>
+          <p>
+            {t(
+              'Получите актуальный каталог и специальные условия для вашего бизнеса.',
+              'Ricevi il catalogo aggiornato e condizioni speciali per il tuo business.'
+            )}
+          </p>
+        </div>
+        <div className="rq-card">
+          <PriceForm data={data} />
         </div>
       </section>
-
-      <section className="section" id="dostavka" data-screen-label="Доставка">
-        <SectionHead num="02" ru={data.delivery.title_ru} it={data.delivery.title_it} accent="#B5532E" />
-        <div className="delivery-wrap">
-          <div>
-            <p className="delivery-lead">
-              Доставка по Москве и области — <b>в течение 24 часов</b> с момента получения заказа. В Санкт-Петербург —
-              дважды в неделю, во вторник и пятницу.
-            </p>
-            <p className="delivery-fleet">{data.delivery.fleet_ru}</p>
-          </div>
-          <ul className="delivery-points">
-            {data.delivery.points_ru.map((p, i) => (
-              <li key={i}>
-                <span className="dp-num">{String(i + 1).padStart(2, '0')}</span>
-                {p}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
-
-      <section className="section" id="katalog" data-screen-label="Каталог">
-        <SectionHead num="03" ru="Каталог" it="Catalogo" accent="#5E6B4F" />
-        <CatTiles data={data} />
-      </section>
-
-      <section className="section req-section" id="pricelist" data-screen-label="Прайс-лист">
-        <SectionHead num="04" ru="Запросить прайс-лист" it="Richiedi il listino" />
-        <div className="req-panel">
-          <div className="req-blurb">
-            Работаем с ресторанами, отелями и кафе Москвы и области. Оставьте контакты — пришлём актуальный прайс-лист и
-            условия поставки. Минимальный заказ — 8 000 ₽.
-            <a className="req-phone" href={'tel:' + data.contact.phone.replace(/[^+\d]/g, '')}>
-              {data.contact.phone}
-            </a>
-          </div>
-          <RequestForm data={data} dark />
-        </div>
-      </section>
-
-      <Foot data={data} />
     </>
   );
 }

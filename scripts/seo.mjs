@@ -14,8 +14,8 @@ export function flatten(menu) {
 export const urlFor = (menu, ...parts) =>
   menu.site.url + parts.filter(Boolean).join('/') + (parts.length ? '/' : '');
 
-export const productUrl = (menu, c, p) => urlFor(menu, 'katalog', c.slug, p.slug);
-export const categoryUrl = (menu, c) => urlFor(menu, 'katalog', c.slug);
+export const productUrl = (menu, c, p) => urlFor(menu, 'catalog', c.slug, p.slug);
+export const categoryUrl = (menu, c) => urlFor(menu, 'catalog', c.slug);
 
 /* JSON-LD: Organization + WebSite (поиск) + ItemList со ссылками на ЧПУ. */
 export function buildStructuredData(menu) {
@@ -25,7 +25,7 @@ export function buildStructuredData(menu) {
     '@type': 'Organization',
     name: menu.brand.name,
     url: base,
-    logo: base + 'images/og-cover.jpg',
+    logo: base + 'images/logo.svg',
     description: menu.site.description_ru,
     address: {
       '@type': 'PostalAddress',
@@ -53,7 +53,7 @@ export function buildStructuredData(menu) {
     inLanguage: 'ru-RU',
     potentialAction: {
       '@type': 'SearchAction',
-      target: base + '?q={search_term_string}',
+      target: base + 'catalog/?q={search_term_string}',
       'query-input': 'required name=search_term_string',
     },
   };
@@ -83,8 +83,9 @@ export function productLd(menu, c, p) {
     name: p.name_ru,
     alternateName: p.name_it,
     url: productUrl(menu, c, p),
-    image: menu.site.url + 'images/' + p.id + '.jpg',
-    description: p.desc_ru || p.name_ru,
+    ...(p.image ? { image: menu.site.url + p.image } : {}),
+    description: p.desc_ru || p.usage_ru || p.name_ru,
+    sku: p.slug,
     category: c.name_ru,
     ...(p.producer ? { brand: { '@type': 'Brand', name: p.producer } } : {}),
   };
@@ -98,8 +99,8 @@ export function buildSeoFallback(menu) {
         .map(
           (p) => `
         <article>
-          <h3><a href="${categoryUrl(menu, c)}${p.slug}/">${esc(p.name_ru)}</a> <span>${esc(p.name_it)}</span></h3>
-          <img src="images/${p.id}.jpg" alt="${esc(p.name_ru)} — ${esc(p.name_it)} оптом" width="320" height="213" loading="lazy" />
+          <h3><a href="${productUrl(menu, c, p)}">${esc(p.name_ru)}</a> <span>${esc(p.name_it || '')}</span></h3>
+          ${p.image ? `<img src="/${p.image}" alt="${esc(p.name_ru)} оптом" width="320" height="320" loading="lazy" />` : ''}
           ${p.producer ? `<p><b>Производитель:</b> ${esc(p.producer)}</p>` : ''}
           ${p.format ? `<p><b>Формат:</b> ${esc(p.format)}</p>` : ''}
           ${p.desc_ru ? `<p>${esc(p.desc_ru)}</p>` : ''}
@@ -107,7 +108,7 @@ export function buildSeoFallback(menu) {
         )
         .join('');
       return `
-      <section id="${c.id}">
+      <section id="cat-${c.id}">
         <h2><a href="${categoryUrl(menu, c)}">${esc(c.name_ru)} оптом — ${esc(c.name_it)}</a></h2>${items}
       </section>`;
     })
