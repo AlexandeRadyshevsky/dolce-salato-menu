@@ -1,9 +1,18 @@
 // HTTP-обработчик API (без фреймворков, node:http).
 //   POST /api/price-request          — заявка с сайта
 //   GET  /api/health                 — проверка
-//   GET  /api/admin/segments         — сколько контактов в каждом сегменте   (Bearer ADMIN_TOKEN)
-//   GET  /api/admin/contacts.csv     — выгрузка ?segment=main|<id категории> (Bearer ADMIN_TOKEN)
-import { config, categoryIds, categoryName } from './config.js';
+//   GET  /admin                      — админка (вход по ADMIN_PASSWORD)
+//   POST /api/admin/login | logout   — сессия админки (HttpOnly-cookie)
+//   GET  /api/admin/stats            — счётчики + сегменты + список категорий
+//   GET  /api/admin/requests         — заявки ?segment=&q=&page=
+//   DELETE /api/admin/contacts/:id   — удалить контакт (запрос на удаление ПДн)
+//   GET  /api/admin/segments         — сколько контактов в каждом сегменте
+//   GET  /api/admin/contacts.csv     — выгрузка ?segment=main|<id категории>
+//   (всё /api/admin/* — по сессии или заголовку Authorization: Bearer ADMIN_TOKEN)
+import fs from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { config, categoryIds, categoryName, productName } from './config.js';
+import { clearCookie, isAdmin, passwordOk, sessionCookie } from './auth.js';
 import * as unisender from './unisender.js';
 import * as mailer from './mailer.js';
 
@@ -43,6 +52,13 @@ function rateLimiter(limit = 5, windowMs = 10 * 60 * 1000) {
     if (hits.size > 5000) hits.clear();
     return arr.length <= limit;
   };
+}
+
+function clientIp(req) {
+  return (
+    (config.trustProxy && String(req.headers['x-forwarded-for'] || '').split(',')[0].trim()) ||
+    req.socket.remoteAddress
+  );
 }
 
 async function readJson(req, max = 20_000) {
@@ -85,8 +101,11 @@ export function toCsv(rows) {
   return '﻿' + lines.join('\n'); // BOM — Excel корректно откроет кириллицу
 }
 
+const ADMIN_HTML = fileURLToPath(new URL('../admin/index.html', import.meta.url));
+
 export function createHandler(repo, { background = (p) => p } = {}) {
   const allow = rateLimiter();
+  const allowLogin = rateLimiter(10, 15 * 60 * 1000);
 
   const cors = (req) => {
     const origin = req.headers.origin;
@@ -101,12 +120,6 @@ export function createHandler(repo, { background = (p) => p } = {}) {
     return {};
   };
 
-  const isAdmin = (req, url) => {
-    if (!config.adminToken) return false;
-    const h = req.headers.authorization || '';
-    return h === 'Bearer ' + config.adminToken || url.searchParams.get('token') === config.adminToken;
-  };
-
   return async function handler(req, res) {
     const url = new URL(req.url, 'http://localhost');
     const path = url.pathname.replace(/\/+$/, '');
@@ -117,9 +130,7 @@ export function createHandler(repo, { background = (p) => p } = {}) {
       if (path === '/api/health') return send(res, 200, { ok: true }, h);
 
       if (path === '/api/price-request' && req.method === 'POST') {
-        const ip =
-          (config.trustProxy && String(req.headers['x-forwarded-for'] || '').split(',')[0].trim()) ||
-          req.socket.remoteAddress;
+        const ip = clientIp(req);
         const body = await readJson(req);
         if (body.website) return send(res, 200, { ok: true }, h); // honeypot: бот
         if (!allow(ip)) return send(res, 429, { ok: false, error: 'rate_limited' }, h);
@@ -139,8 +150,56 @@ export function createHandler(repo, { background = (p) => p } = {}) {
         return send(res, 201, { ok: true, id: requestId }, h);
       }
 
+      /* ---------- админка ---------- */
+      if (path === '/admin' && req.method === 'GET') {
+        res.writeHead(200, {
+          'Content-Type': 'text/html; charset=utf-8',
+          'Cache-Control': 'no-store',
+          'X-Robots-Tag': 'noindex, nofollow',
+          'X-Frame-Options': 'DENY',
+        });
+        return res.end(fs.readFileSync(ADMIN_HTML));
+      }
+
+      if (path === '/api/admin/login' && req.method === 'POST') {
+        if (!allowLogin(clientIp(req))) return send(res, 429, { ok: false, error: 'rate_limited' });
+        const body = await readJson(req, 2000);
+        if (!passwordOk(body.password)) return send(res, 401, { ok: false, error: 'bad_password' });
+        return send(res, 200, { ok: true }, { 'Set-Cookie': sessionCookie() });
+      }
+      if (path === '/api/admin/logout' && req.method === 'POST') {
+        return send(res, 200, { ok: true }, { 'Set-Cookie': clearCookie() });
+      }
+
+      if (path.startsWith('/api/admin/') && !isAdmin(req)) return send(res, 401, { ok: false }, h);
+
+      if (path === '/api/admin/stats' && req.method === 'GET') {
+        return send(res, 200, {
+          ...repo.stats(),
+          segments: repo.segmentCounts(),
+          categories: config.categories,
+        });
+      }
+
+      if (path === '/api/admin/requests' && req.method === 'GET') {
+        const page = Math.max(1, Number(url.searchParams.get('page')) || 1);
+        const limit = 50;
+        const r = repo.listRequests({
+          segment: url.searchParams.get('segment') || '',
+          q: clip(url.searchParams.get('q'), 100),
+          limit,
+          offset: (page - 1) * limit,
+        });
+        r.rows = r.rows.map((x) => ({ ...x, product: x.product ? productName(x.product) : null }));
+        return send(res, 200, { ...r, page, pages: Math.max(1, Math.ceil(r.total / limit)) });
+      }
+
+      const del = path.match(/^\/api\/admin\/contacts\/(\d+)$/);
+      if (del && req.method === 'DELETE') {
+        return send(res, repo.deleteContact(Number(del[1])) ? 200 : 404, { ok: true });
+      }
+
       if (path === '/api/admin/segments' && req.method === 'GET') {
-        if (!isAdmin(req, url)) return send(res, 401, { ok: false }, h);
         return send(
           res,
           200,
@@ -150,7 +209,6 @@ export function createHandler(repo, { background = (p) => p } = {}) {
       }
 
       if (path === '/api/admin/contacts.csv' && req.method === 'GET') {
-        if (!isAdmin(req, url)) return send(res, 401, { ok: false }, h);
         const segment = url.searchParams.get('segment') || 'main';
         return send(res, 200, toCsv(repo.exportSegment(segment)), {
           ...h,

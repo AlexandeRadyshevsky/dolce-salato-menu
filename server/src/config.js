@@ -24,6 +24,9 @@ export const config = {
   dbPath: path.resolve(here, '..', env.DB_PATH || 'data/dolcesalato.db'),
   corsOrigin: (env.CORS_ORIGIN || '').split(',').map((s) => s.trim()).filter(Boolean),
   adminToken: env.ADMIN_TOKEN || '',
+  adminPassword: env.ADMIN_PASSWORD || '',
+  sessionSecret: env.SESSION_SECRET || '',
+  cookieSecure: env.COOKIE_SECURE !== '0',
   trustProxy: env.TRUST_PROXY !== '0',
 
   mail: {
@@ -49,6 +52,9 @@ export const config = {
   // Сегменты = категории PDF-каталога
   categories: menu.categories.map((c) => ({ id: c.id, name: c.name_ru, parent: c.parent || null })),
 };
+
+const productNames = new Map(menu.categories.flatMap((c) => c.products.map((p) => [p.slug, p.name_ru])));
+export const productName = (slug) => productNames.get(slug) || slug;
 
 export const categoryIds = new Set(config.categories.map((c) => c.id));
 export const categoryName = (id) => config.categories.find((c) => c.id === id)?.name || id;

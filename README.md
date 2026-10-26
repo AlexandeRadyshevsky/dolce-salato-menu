@@ -59,7 +59,16 @@ npm run export -- pasta > pasta.csv   # CSV сегмента; --segments — с�
 npm test
 ```
 
-Выгрузка через HTTP: `GET /api/admin/contacts.csv?segment=main` с заголовком
+### Админка для заказчика
+
+`https://<домен>/admin` — вход по паролю `ADMIN_PASSWORD` из `server/.env`.
+Счётчики заявок, список заявок (контакт, компания, категории, комментарий,
+статусы письма и Unisender), фильтр по сегменту-категории, поиск, выгрузка CSV
+(основная база или сегмент), удаление контакта по запросу на удаление ПДн.
+Страница отдаётся API-сервером (`noindex`), сессия — HttpOnly-cookie на 12 ч,
+не больше 10 попыток входа за 15 минут с одного IP.
+
+Для скриптов: `GET /api/admin/contacts.csv?segment=main` с заголовком
 `Authorization: Bearer <ADMIN_TOKEN>`.
 
 ## Деплой на VPS

@@ -117,6 +117,46 @@ function createRepo(db) {
     pendingSync: () => db.prepare("SELECT id FROM contacts WHERE sync_status IN ('pending','error') ORDER BY id").all(),
     segmentCounts: () =>
       db.prepare('SELECT segment, COUNT(*) AS contacts FROM contact_segments GROUP BY segment ORDER BY contacts DESC').all(),
+    /* ---------- админка ---------- */
+    stats() {
+      const one = (sql, ...a) => db.prepare(sql).get(...a).n;
+      const since = (days) => new Date(Date.now() - days * 864e5).toISOString();
+      return {
+        contacts: one('SELECT COUNT(*) n FROM contacts'),
+        requests: one('SELECT COUNT(*) n FROM requests'),
+        requests7: one('SELECT COUNT(*) n FROM requests WHERE created_at >= ?', since(7)),
+        requests30: one('SELECT COUNT(*) n FROM requests WHERE created_at >= ?', since(30)),
+        syncErrors: one("SELECT COUNT(*) n FROM contacts WHERE sync_status = 'error'"),
+      };
+    },
+    /* Заявки (новые сверху) с фильтром по сегменту и поиском */
+    listRequests({ segment = '', q = '', limit = 50, offset = 0 } = {}) {
+      const where = [];
+      const args = [];
+      if (segment && segment !== 'main') {
+        where.push('EXISTS (SELECT 1 FROM json_each(r.categories) j WHERE j.value = ?)');
+        args.push(segment);
+      }
+      if (q) {
+        where.push('(c.email LIKE ? OR r.name LIKE ? OR r.company LIKE ? OR r.phone LIKE ?)');
+        const like = '%' + q + '%';
+        args.push(like, like, like, like);
+      }
+      const w = where.length ? 'WHERE ' + where.join(' AND ') : '';
+      const total = db.prepare(`SELECT COUNT(*) n FROM requests r JOIN contacts c ON c.id = r.contact_id ${w}`).get(...args).n;
+      const rows = db
+        .prepare(
+          `SELECT r.id, r.contact_id, r.name, r.company, r.phone, c.email, r.categories, r.product, r.comment,
+                  r.page, r.created_at, r.mail_status, c.sync_status, c.sync_error
+             FROM requests r JOIN contacts c ON c.id = r.contact_id ${w}
+            ORDER BY r.created_at DESC LIMIT ? OFFSET ?`
+        )
+        .all(...args, limit, offset)
+        .map((r) => ({ ...r, categories: JSON.parse(r.categories) }));
+      return { total, rows };
+    },
+    deleteContact: (id) => db.prepare('DELETE FROM contacts WHERE id = ?').run(id).changes,
+
     /* Контакты сегмента ('main' — все) с последней датой заявки */
     exportSegment(segment = 'main') {
       return db

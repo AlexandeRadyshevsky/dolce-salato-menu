@@ -1,6 +1,6 @@
 // Письмо менеджеру о новой заявке «Запросить прайс-лист».
 import nodemailer from 'nodemailer';
-import { config, categoryName } from './config.js';
+import { config, categoryName, productName } from './config.js';
 
 let transport = null;
 export const enabled = () => Boolean(config.mail.host && config.mail.to);
@@ -27,7 +27,7 @@ export function buildMessage(r) {
     ['E-mail', r.email],
     ['Телефон', r.phone],
     ['Категории', cats.join(', ') || '—'],
-    ['Товар', r.product || ''],
+    ['Товар', r.product ? productName(r.product) : ''],
     ['Комментарий', r.comment || ''],
     ['Страница', r.page || ''],
     ['Дата', new Date().toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' })],

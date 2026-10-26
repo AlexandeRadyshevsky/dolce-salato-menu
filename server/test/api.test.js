@@ -6,6 +6,8 @@ process.env.UNISENDER_API_KEY = 'test-key';
 process.env.UNISENDER_MAIN_LIST_ID = '100';
 process.env.UNISENDER_SEGMENT_LISTS = JSON.stringify({ pasta: 201, olio: 202 });
 process.env.ADMIN_TOKEN = 'secret';
+process.env.ADMIN_PASSWORD = 'pass-123';
+process.env.COOKIE_SECURE = '0';
 
 const { openDb } = await import('../src/db.js');
 const { createHandler } = await import('../src/app.js');
@@ -111,12 +113,59 @@ test('CSV-выгрузка сегмента защищена токеном', as
   const csv = await res.text();
   assert.match(csv, /mario@example.com/);
   assert.match(csv, /Паста/);
-  const empty = await (await realFetch(base + '/api/admin/contacts.csv?segment=tartufo&token=secret')).text();
+  const empty = await (
+    await realFetch(base + '/api/admin/contacts.csv?segment=tartufo', { headers: { Authorization: 'Bearer secret' } })
+  ).text();
   assert.doesNotMatch(empty, /mario/);
+  // токен в query-строке не принимается
+  assert.equal((await realFetch(base + '/api/admin/contacts.csv?token=secret')).status, 401);
 });
 
 test('normalizePhone', () => {
   assert.equal(uni.normalizePhone('8 900 123 45 67'), '+79001234567');
   assert.equal(uni.normalizePhone('9001234567'), '+79001234567');
   assert.equal(uni.normalizePhone('+39 06 1234 5678'), '+390612345678');
+});
+
+test('админка: вход по паролю, заявки по сегменту, удаление контакта', async () => {
+  const page = await realFetch(base + '/admin');
+  assert.equal(page.status, 200);
+  assert.match(page.headers.get('x-robots-tag'), /noindex/);
+
+  const login = (password) =>
+    realFetch(base + '/api/admin/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password }),
+    });
+  assert.equal((await login('wrong')).status, 401);
+  assert.equal((await realFetch(base + '/api/admin/stats')).status, 401);
+
+  const ok = await login('pass-123');
+  assert.equal(ok.status, 200);
+  const cookie = ok.headers.get('set-cookie').split(';')[0];
+  const get = (p) => realFetch(base + p, { headers: { cookie } }).then((r) => r.json());
+
+  const stats = await get('/api/admin/stats');
+  assert.equal(stats.contacts, 1);
+  assert.equal(stats.categories.length, 22);
+
+  const pasta = await get('/api/admin/requests?segment=pasta');
+  assert.equal(pasta.total, 1);
+  assert.equal(pasta.rows[0].email, 'mario@example.com');
+  assert.deepEqual((await get('/api/admin/requests?segment=dolci')).rows[0].categories, ['dolci']);
+  assert.equal((await get('/api/admin/requests?q=trattoria')).total, 2);
+  assert.equal((await get('/api/admin/requests?q=nobody')).total, 0);
+
+  // подделанная cookie не проходит
+  const fake = await realFetch(base + '/api/admin/stats', { headers: { cookie: 'ds_admin=9999999999999.abc' } });
+  assert.equal(fake.status, 401);
+
+  const del = await realFetch(base + '/api/admin/contacts/' + pasta.rows[0].contact_id, {
+    method: 'DELETE',
+    headers: { cookie },
+  });
+  assert.equal(del.status, 200);
+  assert.equal((await get('/api/admin/stats')).contacts, 0);
+  assert.equal((await get('/api/admin/requests')).total, 0); // заявки удалены каскадом
 });

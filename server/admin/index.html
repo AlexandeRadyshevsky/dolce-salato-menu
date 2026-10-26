@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Заявки — Dolce&amp;Salato</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #f5f2eb; --paper: #fff; --line: #e7e2d7; --ink: #161d19; --ink-2: #3e4641; --muted: #78807a;
+    --brand: #214a30; --green: #1f5a3a; --sage: #c2c796; --red: #e3262b; --ok: #1f8a4c; --warn: #b7791f;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.5 Manrope, system-ui, sans-serif; }
+  button, input, select { font: inherit; }
+  button { cursor: pointer; }
+  .hidden { display: none !important; }
+
+  /* вход */
+  .login { min-height: 100vh; display: grid; place-items: center; padding: 20px; }
+  .login form { width: min(360px, 100%); background: var(--paper); padding: 32px; border-radius: 14px; box-shadow: 0 30px 60px -40px rgba(0,0,0,.4); }
+  .brand { font-weight: 800; font-size: 22px; color: var(--brand); letter-spacing: -.01em; }
+  .brand span { color: var(--sage); }
+  .login p { color: var(--muted); margin: 6px 0 22px; }
+  .login input { width: 100%; padding: 12px 14px; border: 1px solid var(--line); border-radius: 8px; }
+  .login input:focus { outline: none; border-color: var(--green); }
+  .err { color: var(--red); font-size: 13px; min-height: 20px; margin-top: 8px; }
+
+  .btn { white-space: nowrap; display: inline-flex; align-items: center; gap: 8px; border: 0; border-radius: 999px; padding: 10px 18px; font-weight: 800; font-size: 12px; letter-spacing: .05em; text-transform: uppercase; }
+  .btn-green { background: var(--green); color: #fff; }
+  .btn-green:hover { background: var(--brand); }
+  .btn-ghost { background: transparent; border: 1.5px solid var(--line); color: var(--ink-2); }
+  .btn-ghost:hover { border-color: var(--ink-2); }
+  .login .btn { width: 100%; justify-content: center; margin-top: 8px; padding: 13px; }
+
+  /* приложение */
+  header { position: sticky; top: 0; z-index: 5; display: flex; align-items: center; gap: 16px; padding: 14px 24px; background: var(--paper); border-bottom: 1px solid var(--line); }
+  header .sp { flex: 1; }
+  main { padding: 24px; max-width: 1400px; margin: 0 auto; }
+  .stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-bottom: 20px; }
+  .stat { background: var(--paper); border-radius: 12px; padding: 16px 18px; }
+  .stat b { display: block; font-size: 28px; font-weight: 800; line-height: 1.1; }
+  .stat span { color: var(--muted); font-size: 12.5px; }
+  .stat.warn b { color: var(--red); }
+
+  .panel { background: var(--paper); border-radius: 12px; padding: 18px; }
+  .toolbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 14px; }
+  .toolbar input, .toolbar select { padding: 9px 12px; border: 1px solid var(--line); border-radius: 8px; background: #fff; min-width: 0; }
+  .toolbar input { flex: 1 1 240px; }
+  .toolbar select { flex: 0 1 300px; }
+  .seg-note { color: var(--muted); font-size: 12.5px; margin: -4px 0 12px; }
+
+  .tbl-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; min-width: 980px; }
+  th { text-align: left; font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); padding: 8px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  td { padding: 12px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  tr:hover td { background: #fbfaf7; }
+  td.date { white-space: nowrap; color: var(--ink-2); }
+  td .sub { color: var(--muted); font-size: 12.5px; }
+  td a { color: var(--green); text-decoration: none; }
+  td a:hover { text-decoration: underline; }
+  .chips { display: flex; flex-wrap: wrap; gap: 4px; }
+  .chip { background: #eef3ec; color: var(--brand); border-radius: 999px; padding: 2px 8px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+  .st { display: inline-block; font-size: 11.5px; font-weight: 700; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
+  .st-ok { background: #e3f3e9; color: var(--ok); }
+  .st-error { background: #fde6e6; color: var(--red); }
+  .st-pending { background: #fbf0dc; color: var(--warn); }
+  .st-off { background: #eee; color: var(--muted); }
+  .del { border: 0; background: none; color: var(--muted); font-size: 18px; line-height: 1; padding: 4px 6px; border-radius: 6px; }
+  .del:hover { background: #fde6e6; color: var(--red); }
+  .empty { text-align: center; color: var(--muted); padding: 50px 0; }
+  .pager { display: flex; justify-content: space-between; align-items: center; margin-top: 14px; color: var(--muted); }
+  .pager div { display: flex; gap: 8px; }
+
+  @media (max-width: 760px) {
+    header, main { padding-left: 14px; padding-right: 14px; }
+    .stats { grid-template-columns: 1fr 1fr; }
+    .user-hide { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<section class="login hidden" id="login">
+  <form id="login-form">
+    <div class="brand">dolce<span>&amp;</span>salato</div>
+    <p>Заявки «Запросить прайс-лист»</p>
+    <input type="password" id="pw" placeholder="Пароль" autocomplete="current-password" required autofocus />
+    <button class="btn btn-green" type="submit">Войти</button>
+    <div class="err" id="login-err"></div>
+  </form>
+</section>
+
+<section class="hidden" id="app">
+  <header>
+    <div class="brand">dolce<span>&amp;</span>salato</div>
+    <span class="user-hide" style="color:var(--muted)">Заявки с сайта</span>
+    <span class="sp"></span>
+    <a class="btn btn-ghost" id="csv" href="#">Скачать CSV</a>
+    <button class="btn btn-ghost" id="logout">Выйти</button>
+  </header>
+  <main>
+    <div class="stats" id="stats"></div>
+    <div class="panel">
+      <div class="toolbar">
+        <select id="segment"></select>
+        <input type="search" id="q" placeholder="Поиск: имя, компания, e-mail, телефон" />
+      </div>
+      <div class="seg-note" id="seg-note"></div>
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Дата</th><th>Контакт</th><th>Компания</th><th>Категории</th><th>Комментарий / товар</th>
+              <th>Письмо</th><th>Unisender</th><th></th>
+            </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+      <div class="pager"><span id="total"></span><div><button class="btn btn-ghost" id="prev">←</button><button class="btn btn-ghost" id="next">→</button></div></div>
+    </div>
+  </main>
+</section>
+
+<script>
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+  const ST = { ok: 'отправлено', error: 'ошибка', pending: 'в очереди', off: 'не настроено' };
+  const state = { page: 1, pages: 1, segment: '', q: '', cats: {} };
+
+  async function api(path, opts = {}) {
+    const res = await fetch(path, { credentials: 'same-origin', ...opts });
+    if (res.status === 401) { show('login'); throw new Error('unauthorized'); }
+    return res.json();
+  }
+  function show(which) {
+    $('login').classList.toggle('hidden', which !== 'login');
+    $('app').classList.toggle('hidden', which !== 'app');
+  }
+
+  $('login-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    $('login-err').textContent = '';
+    const res = await fetch('/api/admin/login', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: $('pw').value }),
+    });
+    if (res.ok) { $('pw').value = ''; boot(); }
+    else $('login-err').textContent = res.status === 429 ? 'Слишком много попыток, подождите 15 минут' : 'Неверный пароль';
+  });
+  $('logout').onclick = async () => { await fetch('/api/admin/logout', { method: 'POST' }); show('login'); };
+
+  async function boot() {
+    const s = await api('/api/admin/stats');
+    show('app');
+    s.categories.forEach((c) => (state.cats[c.id] = c.name));
+    const counts = Object.fromEntries(s.segments.map((x) => [x.segment, x.contacts]));
+    $('stats').innerHTML = [
+      [s.contacts, 'контактов в основной базе'],
+      [s.requests, 'заявок всего'],
+      [s.requests7 + ' / ' + s.requests30, 'заявок за 7 / 30 дней'],
+      [s.syncErrors, 'ошибок синхронизации с Unisender', s.syncErrors > 0],
+    ].map(([n, l, w]) => `<div class="stat${w ? ' warn' : ''}"><b>${n}</b><span>${l}</span></div>`).join('');
+    $('segment').innerHTML =
+      `<option value="">Все заявки · основная база (${counts.main || 0})</option>` +
+      s.categories.map((c) => `<option value="${c.id}">${c.parent ? '— ' : ''}${esc(c.name)} (${counts[c.id] || 0})</option>`).join('');
+    $('segment').value = state.segment;
+    load();
+  }
+
+  async function load() {
+    const p = new URLSearchParams({ page: state.page, segment: state.segment, q: state.q });
+    const r = await api('/api/admin/requests?' + p);
+    state.pages = r.pages;
+    $('csv').href = '/api/admin/contacts.csv?segment=' + encodeURIComponent(state.segment || 'main');
+    $('seg-note').textContent = state.segment
+      ? `Сегмент «${state.cats[state.segment]}»: заявки, где выбрана эта категория. CSV — все контакты сегмента.`
+      : 'CSV — все контакты основной базы (по одной строке на e-mail, со всеми сегментами).';
+    $('total').textContent = `Найдено заявок: ${r.total} · стр. ${r.page} из ${r.pages}`;
+    $('prev').disabled = r.page <= 1;
+    $('next').disabled = r.page >= r.pages;
+    $('rows').innerHTML = r.rows.length ? r.rows.map(row).join('') : '<tr><td colspan="8" class="empty">Заявок пока нет</td></tr>';
+  }
+
+  function row(r) {
+    const d = new Date(r.created_at);
+    const cats = r.categories.map((c) => `<span class="chip">${esc(state.cats[c] || c)}</span>`).join('');
+    const tel = String(r.phone).replace(/[^+\d]/g, '');
+    return `<tr>
+      <td class="date">${d.toLocaleDateString('ru-RU')}<div class="sub">${d.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}</div></td>
+      <td><b>${esc(r.name)}</b><div><a href="mailto:${esc(r.email)}">${esc(r.email)}</a></div><div><a href="tel:${esc(tel)}">${esc(r.phone)}</a></div></td>
+      <td>${esc(r.company)}</td>
+      <td><div class="chips">${cats || '<span class="sub">—</span>'}</div></td>
+      <td>${esc(r.comment)}${r.product ? `<div class="sub">Товар: ${esc(r.product)}</div>` : ''}</td>
+      <td><span class="st st-${r.mail_status}">${ST[r.mail_status] || r.mail_status}</span></td>
+      <td><span class="st st-${r.sync_status}" title="${esc(r.sync_error)}">${ST[r.sync_status] || r.sync_status}</span></td>
+      <td><button class="del" title="Удалить контакт и все его заявки" data-id="${r.contact_id}" data-email="${esc(r.email)}">×</button></td>
+    </tr>`;
+  }
+
+  $('rows').addEventListener('click', async (e) => {
+    const b = e.target.closest('.del');
+    if (!b) return;
+    if (!confirm(`Удалить контакт ${b.dataset.email} и все его заявки из базы сайта?\n\nВ Unisender контакт нужно удалить отдельно.`)) return;
+    await api('/api/admin/contacts/' + b.dataset.id, { method: 'DELETE' });
+    boot();
+  });
+  $('segment').onchange = (e) => { state.segment = e.target.value; state.page = 1; load(); };
+  let t;
+  $('q').oninput = (e) => { clearTimeout(t); t = setTimeout(() => { state.q = e.target.value.trim(); state.page = 1; load(); }, 250); };
+  $('prev').onclick = () => { state.page--; load(); };
+  $('next').onclick = () => { state.page++; load(); };
+
+  boot().catch(() => {});
+</script>
+</body>
+</html>
