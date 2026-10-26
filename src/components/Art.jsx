@@ -9,7 +9,12 @@ import forkRaw from '../assets/hero-fork.svg?raw';
 const classify = (svg, prefix) => svg.replace(/<g id="([\w-]+)"/g, `<g class="${prefix}-$1"`);
 
 const LOGO = classify(logoRaw, 'lg');
-const OLIVE = classify(oliveRaw, 'ol');
+/* Рука в оригинале обрезана ровно по низу открытки (y=461.84). Чтобы при
+   анимации (подъём + поворот) снизу не открывался срез, продлеваем руку
+   вниз за край баннера по наклону её краёв; лишнее скрывает overflow героя. */
+const ARM_EXTENSION =
+  '<path d="M-58.02 455L-109.4 545L-28.6 545L1.84 455Z" fill="#ffffff"/>';
+const OLIVE = classify(oliveRaw, 'ol').replace('<g class="ol-hand">', '<g class="ol-hand">' + ARM_EXTENSION);
 const FORK = classify(forkRaw, 'fk')
   /* нити спагетти рисуются штрихом: pathLength=1 для анимации stroke-dashoffset */
   .replace(/<path d="([^"]+)" fill="none" stroke=/g, '<path pathLength="1" d="$1" fill="none" stroke=');
