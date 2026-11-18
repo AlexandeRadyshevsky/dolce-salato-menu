@@ -169,3 +169,11 @@ test('админка: вход по паролю, заявки по сегмен
   assert.equal((await get('/api/admin/stats')).contacts, 0);
   assert.equal((await get('/api/admin/requests')).total, 0); // заявки удалены каскадом
 });
+
+test('письмо о заявке уходит на все адреса из MAIL_TO', async () => {
+  const { buildMessage } = await import('../src/mailer.js');
+  const m = buildMessage({ ...valid, categories: ['pasta'], email: 'mario@example.com' });
+  assert.deepEqual(m.to, ['ds.zakaz@gmail.com', 'massimo.dolcesalato@gmail.com']);
+  assert.equal(m.replyTo, 'mario@example.com');
+  assert.match(m.text, /Паста/);
+});

@@ -3,7 +3,7 @@ import nodemailer from 'nodemailer';
 import { config, categoryName, productName } from './config.js';
 
 let transport = null;
-export const enabled = () => Boolean(config.mail.host && config.mail.to);
+export const enabled = () => Boolean(config.mail.host && config.mail.to.length);
 
 function getTransport() {
   if (!transport) {

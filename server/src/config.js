@@ -36,7 +36,11 @@ export const config = {
     user: env.SMTP_USER || '',
     pass: env.SMTP_PASS || '',
     from: env.MAIL_FROM || env.SMTP_USER || '',
-    to: env.MAIL_TO || menu.contact.email,
+    // несколько адресов — через запятую
+    to: (env.MAIL_TO || 'ds.zakaz@gmail.com, massimo.dolcesalato@gmail.com')
+      .split(',')
+      .map((s) => s.trim())
+      .filter(Boolean),
   },
 
   unisender: {
