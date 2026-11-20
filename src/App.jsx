@@ -15,7 +15,7 @@ import NotFoundPage from './pages/NotFoundPage.jsx';
 
 export default function App({ data }) {
   const route = useRoute(data);
-  const { name } = useLang();
+  const { lang } = useLang();
   const [menuOpen, setMenuOpen] = useState(false);
   const [modal, setModal] = useState(null); // { preset: [catIds], product }
 
@@ -27,17 +27,19 @@ export default function App({ data }) {
     else window.scrollTo(0, 0);
 
     const s = data.site;
+    const it = lang === 'it';
+    const nm = (o) => (it && o.name_it ? o.name_it : o.name_ru);
     const titles = {
-      home: s.title_ru,
-      catalog: 'Каталог итальянских продуктов оптом — Dolce&Salato',
-      category: route.cat && `${route.cat.name_ru} оптом — купить для ресторана | Dolce&Salato`,
-      product: route.product && `${route.product.name_ru} оптом — ${route.cat.name_ru} | Dolce&Salato`,
-      delivery: 'Доставка — Dolce&Salato',
-      privacy: 'Политика обработки персональных данных — Dolce&Salato',
-      notfound: 'Страница не найдена — Dolce&Salato',
+      home: it ? 'Dolce&Salato — prodotti italiani all’ingrosso per ristoranti e HoReCa' : s.title_ru,
+      catalog: it ? 'Catalogo dei prodotti italiani all’ingrosso — Dolce&Salato' : 'Каталог итальянских продуктов оптом — Dolce&Salato',
+      category: route.cat && (it ? `${nm(route.cat)} all’ingrosso | Dolce&Salato` : `${route.cat.name_ru} оптом — купить для ресторана | Dolce&Salato`),
+      product: route.product && (it ? `${nm(route.product)} — ${nm(route.cat)} | Dolce&Salato` : `${route.product.name_ru} оптом — ${route.cat.name_ru} | Dolce&Salato`),
+      delivery: it ? 'Consegna — Dolce&Salato' : 'Доставка — Dolce&Salato',
+      privacy: it ? 'Informativa sulla privacy — Dolce&Salato' : 'Политика обработки персональных данных — Dolce&Salato',
+      notfound: it ? 'Pagina non trovata — Dolce&Salato' : 'Страница не найдена — Dolce&Salato',
     };
     document.title = titles[route.page] || s.title_ru;
-  }, [route, data]);
+  }, [route, data, lang]);
 
   useEffect(() => {
     document.body.classList.toggle('menu-open', menuOpen);
@@ -91,7 +93,7 @@ export default function App({ data }) {
   return (
     <>
       <a className="skip" href="#main">
-        Перейти к содержанию
+        {lang === 'it' ? 'Vai al contenuto' : 'Перейти к содержанию'}
       </a>
       <Header data={data} onPrice={openPrice} onMenu={() => setMenuOpen((v) => !v)} menuOpen={menuOpen} />
 

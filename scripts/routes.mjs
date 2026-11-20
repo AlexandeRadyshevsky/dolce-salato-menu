@@ -144,7 +144,38 @@ export function buildRoutePages(menu, builtIndexHtml) {
     }
   }
 
+  // старые адреса переименованных карточек: заглушка с переходом на новый адрес
+  for (const { from, to } of redirects(menu)) {
+    pages.push({
+      file: from.replace(/^\//, '') + 'index.html',
+      html: `<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8"><title>Страница переехала</title>
+<meta name="robots" content="noindex"><link rel="canonical" href="${menu.site.url}${to.slice(1)}">
+<meta http-equiv="refresh" content="0; url=${to}"><script>location.replace(${JSON.stringify(to)})</script>
+</head><body><a href="${to}">Страница переехала</a></body></html>`,
+    });
+  }
   return pages;
+}
+
+/* Старые адреса карточек (p.old_slugs) → новые */
+export function redirects(menu) {
+  const out = [];
+  for (const c of menu.categories)
+    for (const p of c.products)
+      for (const old of p.old_slugs || [])
+        out.push({ from: `/catalog/${c.slug}/${old}/`, to: `/catalog/${c.slug}/${p.slug}/` });
+  return out;
+}
+
+/* nginx: 301 со старых адресов (подключается в конфиге сервера через include) */
+export function buildNginxRedirects(menu) {
+  return (
+    '# сгенерировано при сборке (scripts/routes.mjs) — 301 со старых адресов карточек\n' +
+    redirects(menu)
+      .map(({ from, to }) => `location = ${from.slice(0, -1)} { return 301 ${to}; }\nlocation = ${from} { return 301 ${to}; }`)
+      .join('\n') +
+    '\n'
+  );
 }
 
 /* sitemap.xml по всем маршрутам */

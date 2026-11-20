@@ -27,6 +27,9 @@ export const asset = (rel) => (rel ? import.meta.env.BASE_URL + rel : null);
 export const thumb = (rel) => (rel ? asset(rel.replace(/\.jpg$/, '-600.jpg')) : null);
 export const imgSrcSet = (rel) => (rel ? `${thumb(rel)} 600w, ${asset(rel)} 1200w` : undefined);
 
+/* Привязка обложки к краю, за который уходит объект (из сборки обложек) */
+export const coverPos = (cat) => cat.cover_pos || 'center';
+
 /* Обложка категории: обложка из PDF, для подкатегорий без своей обложки —
    фото первого товара. */
 export function coverOf(data, cat) {

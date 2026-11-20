@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { fillHead } from './scripts/seo.mjs';
-import { buildRoutePages, buildSitemap } from './scripts/routes.mjs';
+import { buildRoutePages, buildSitemap, buildNginxRedirects } from './scripts/routes.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const readMenu = () =>
@@ -41,6 +41,7 @@ function seoRoutePages() {
         fs.writeFileSync(f, page.html);
       }
       fs.writeFileSync(path.join(dist, 'sitemap.xml'), buildSitemap(menu));
+      fs.writeFileSync(path.join(dist, '_redirects.nginx'), buildNginxRedirects(menu));
       console.log('\n  ✓ SEO: сгенерированы ЧПУ-страницы каталога и sitemap.xml');
     },
   };

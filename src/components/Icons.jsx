@@ -101,7 +101,7 @@ export const IconCheck = (p) => (
 );
 
 /* ---------- иконки «Сильных сторон» (крупные, 44px) ---------- */
-/* «Качество» и «Надёжность» — контуры Lucide (ISC License, lucide.dev): award, handshake */
+/* «Качество» — контур Lucide (ISC License, lucide.dev): award */
 export const IconQuality = (p) => (
   <S size={44} sw={1.3} {...p}>
     <circle cx="12" cy="8" r="6" />
@@ -116,13 +116,11 @@ export const IconBulb = (p) => (
     <path d="M12 1.5v1M4.2 4.7l.8.8M19.8 4.7l-.8.8M2 11h1.2M20.8 11H22" />
   </S>
 );
-export const IconHandshake = (p) => (
+/* «Надёжность» — щит с галочкой (Lucide shield-check, ISC License) */
+export const IconReliability = (p) => (
   <S size={44} sw={1.3} {...p}>
-    <path d="M11 17l2 2a1 1 0 103-3" />
-    <path d="M14 14l2.5 2.5a1 1 0 103-3l-3.88-3.88a3 3 0 00-4.24 0l-.88.88a1 1 0 11-3-3l2.81-2.81a5.79 5.79 0 017.06-.87l.47.28a2 2 0 001.42.25L21 4" />
-    <path d="M21 3l1 11h-2" />
-    <path d="M3 3L2 14l6.5 6.5a1 1 0 103-3" />
-    <path d="M3 4h8" />
+    <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 01-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 011-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 011.52 0C14.51 3.81 17 5 19 5a1 1 0 011 1z" />
+    <path d="M9 12l2 2 4-4" />
   </S>
 );
 export const IconLifebuoy = (p) => (

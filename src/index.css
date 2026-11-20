@@ -1272,6 +1272,12 @@ p {
   overflow: hidden;
   margin-bottom: 26px;
 }
+.cat-hero.img-left {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+}
+.cat-hero.img-left .cat-hero-img {
+  order: -1;
+}
 .cat-hero-copy {
   padding: clamp(24px, 4vw, 52px);
 }

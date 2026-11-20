@@ -3,15 +3,16 @@ import { Crumbs, Eyebrow, Reveal } from '../components/ui.jsx';
 import { IconArrow, IconPin, IconTruck } from '../components/Icons.jsx';
 
 export default function DeliveryPage({ data, onPrice }) {
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const d = data.delivery;
+  const it = lang === 'it';
   return (
     <div className="page">
       <Crumbs items={[{ label: t('Главная', 'Home'), to: '/' }, { label: t('Доставка', 'Consegna') }]} />
       <header className="page-head">
         <Eyebrow>{t('Доставка', 'Consegna')}</Eyebrow>
         <h1 className="h2">{t('Быстро и надёжно по всей России', 'Consegna rapida e affidabile in tutta la Russia')}</h1>
-        <p className="page-lead">{d.lead_ru}</p>
+        <p className="page-lead">{it ? d.lead_it : d.lead_ru}</p>
       </header>
 
       <div className="dl-cards">
@@ -28,12 +29,12 @@ export default function DeliveryPage({ data, onPrice }) {
         <Reveal className="dl-card" delay={160}>
           <IconTruck size={26} />
           <h2 className="h3">{t('Собственный автопарк', 'Flotta propria')}</h2>
-          <p>{d.fleet_ru}</p>
+          <p>{it ? d.fleet_it : d.fleet_ru}</p>
         </Reveal>
       </div>
 
       <ul className="dl-points">
-        {d.points_ru.map((p, i) => (
+        {(it ? d.points_it : d.points_ru).map((p, i) => (
           <li key={i}>
             <span>{String(i + 1).padStart(2, '0')}</span>
             {p}

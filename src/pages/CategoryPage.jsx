@@ -1,5 +1,5 @@
 import { useLang } from '../i18n.jsx';
-import { categoryById, catPath, childrenOf, coverOf, countOf } from '../lib/catalog.js';
+import { categoryById, catPath, childrenOf, coverOf, coverPos, countOf } from '../lib/catalog.js';
 import { Link } from '../router.jsx';
 import { Crumbs, Eyebrow, ProductCard, useCount } from '../components/ui.jsx';
 import { IconArrow } from '../components/Icons.jsx';
@@ -7,7 +7,7 @@ import { IconArrow } from '../components/Icons.jsx';
 /* Страница категории. Для «Заправок» — разделы подкатегорий
    («Оливковое масло», «Уксус»), как в PDF-каталоге. */
 export default function CategoryPage({ data, cat, onPrice }) {
-  const { t, name, lang } = useLang();
+  const { t, name } = useLang();
   const count = useCount();
   const kids = childrenOf(data, cat);
   const parent = cat.parent ? categoryById(data, cat.parent) : null;
@@ -24,9 +24,10 @@ export default function CategoryPage({ data, cat, onPrice }) {
   return (
     <div className="page">
       <Crumbs items={crumbs} />
-      <header className="cat-hero">
+      {/* объект уходит за левый край снимка → картинка слева, вплотную к краю карточки */}
+      <header className={'cat-hero' + (coverPos(cat).startsWith('left') ? ' img-left' : '')}>
         <div className="cat-hero-copy">
-          <Eyebrow>{lang === 'ru' ? cat.name_it : cat.name_ru}</Eyebrow>
+          <Eyebrow>{parent ? name(parent) : t('Каталог', 'Catalogo')}</Eyebrow>
           <h1 className="h1">{name(cat)}</h1>
           <p className="page-lead">
             {count(countOf(data, cat))} · {t('оптом для ресторанов, отелей и HoReCa', 'all’ingrosso per ristoranti, hotel e HoReCa')}
@@ -37,7 +38,7 @@ export default function CategoryPage({ data, cat, onPrice }) {
         </div>
         {cover && (
           <div className="cat-hero-img">
-            <img src={cover} alt={cat.name_ru} />
+            <img src={cover} alt={cat.name_ru} style={{ objectPosition: coverPos(cat) }} />
           </div>
         )}
       </header>

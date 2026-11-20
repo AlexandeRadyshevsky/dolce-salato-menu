@@ -5,7 +5,7 @@ import { Logo } from './Art.jsx';
 import { IconMail, IconPhone, IconPin } from './Icons.jsx';
 
 export default function Footer({ data, onAnchor }) {
-  const { t, name } = useLang();
+  const { t, name, lang } = useLang();
   const c = data.contact;
   const tops = topCategories(data);
   const half = Math.ceil(tops.length / 2);
@@ -69,9 +69,9 @@ export default function Footer({ data, onAnchor }) {
         <p>
           <IconPin size={18} />
           <span>
-            {c.office_ru}
+            {lang === 'it' ? c.office_it : c.office_ru}
             <br />
-            {c.address_ru}
+            {lang === 'it' ? c.address_it : c.address_ru}
           </span>
         </p>
       </div>

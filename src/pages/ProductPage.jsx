@@ -1,18 +1,23 @@
-import { useLang } from '../i18n.jsx';
+import { useLang, useProductText } from '../i18n.jsx';
 import { asset, categoryById, catPath } from '../lib/catalog.js';
 import { Crumbs, Eyebrow, ProductCard } from '../components/ui.jsx';
 import { IconArrow } from '../components/Icons.jsx';
 
-/* Страница товара: /catalog/<категория>/<товар>-optom/ */
+/* Страница товара: /catalog/<категория>/<товар>-optom/
+   Все тексты — строго на языке сайта (итальянские из PDF-каталога). */
 export default function ProductPage({ data, cat, product, onPrice }) {
-  const { t, name, lang } = useLang();
+  const { t, name } = useLang();
+  const pt = useProductText();
   const parent = cat.parent ? categoryById(data, cat.parent) : null;
-  const producerText = product.producer && data.producers ? data.producers[product.producer] : null;
+  const producerText = pt.producerText(data, product.producer);
   const related = cat.products.filter((p) => p !== product).slice(0, 4);
+  const desc = pt.desc(product);
+  const usage = pt.usage(product);
+  const subtitle = pt.subtitle(product);
 
   const facts = [
-    [t('Фасовка', 'Formato'), product.format],
-    [t('Упаковка', 'Confezione'), product.pack && product.pack.join(' · ')],
+    [t('Фасовка', 'Formato'), pt.format(product)],
+    [t('Упаковка', 'Confezione'), pt.pack(product)],
     [t('Характеристики', 'Caratteristiche'), product.spec],
     [t('Хранение', 'Conservazione'), product.storage],
     [t('Производитель', 'Produttore'), product.producer],
@@ -32,13 +37,12 @@ export default function ProductPage({ data, cat, product, onPrice }) {
 
       <article className="prod">
         <div className="prod-img">
-          {product.image ? <img src={asset(product.image)} alt={product.name_ru + ' — ' + (product.name_it || '')} /> : null}
+          {product.image ? <img src={asset(product.image)} alt={name(product)} /> : null}
         </div>
         <div className="prod-info">
           <Eyebrow>{name(cat)}</Eyebrow>
           <h1 className="h2">{name(product)}</h1>
-          {product.name_it && <div className="prod-alt">{lang === 'ru' ? product.name_it : product.name_ru}</div>}
-          {product.subtitle_ru && <p className="prod-sub">{product.subtitle_ru}</p>}
+          {subtitle && <p className="prod-sub">{subtitle}</p>}
 
           {facts.length > 0 && (
             <dl className="facts">
@@ -51,16 +55,16 @@ export default function ProductPage({ data, cat, product, onPrice }) {
             </dl>
           )}
 
-          {product.desc_ru && (
+          {desc && (
             <div className="prod-text">
               <h2>{t('Описание', 'Descrizione')}</h2>
-              <p>{product.desc_ru}</p>
+              <p>{desc}</p>
             </div>
           )}
-          {product.usage_ru && (
+          {usage && (
             <div className="prod-text">
               <h2>{t('Применение', 'Utilizzo')}</h2>
-              <p>{product.usage_ru}</p>
+              <p>{usage}</p>
             </div>
           )}
 
@@ -86,7 +90,9 @@ export default function ProductPage({ data, cat, product, onPrice }) {
       {related.length > 0 && (
         <section className="related">
           <div className="sec-head">
-            <h2 className="h3">{t('Ещё в категории', 'Altri prodotti')} «{name(cat)}»</h2>
+            <h2 className="h3">
+              {t('Ещё в категории', 'Altri prodotti in')} «{name(cat)}»
+            </h2>
           </div>
           <div className="p-grid">
             {related.map((p, i) => (

@@ -1,6 +1,6 @@
 import { Link } from '../router.jsx';
-import { useLang } from '../i18n.jsx';
-import { catPath, countOf, coverOf, imgSrcSet, plural, productPath, thumb } from '../lib/catalog.js';
+import { useLang, useProductText } from '../i18n.jsx';
+import { catPath, countOf, coverOf, coverPos, imgSrcSet, plural, productPath, thumb } from '../lib/catalog.js';
 import useReveal from './useReveal.js';
 import { IconArrow } from './Icons.jsx';
 
@@ -43,7 +43,9 @@ export function CategoryTile({ data, cat, delay = 0, showCount }) {
   return (
     <Reveal as="div" className="cat-tile-wrap" delay={delay}>
       <Link to={catPath(cat)} className="cat-tile">
-        <span className="ct-img">{img && <img src={img} alt={cat.name_ru} loading="lazy" />}</span>
+        <span className="ct-img">
+          {img && <img src={img} alt={cat.name_ru} loading="lazy" style={{ objectPosition: coverPos(cat) }} />}
+        </span>
         <span className="ct-body">
           <span className="ct-name">
             {name(cat)}
@@ -70,8 +72,10 @@ export function CategoryGrid({ data, cats, showCount }) {
 
 /* Карточка товара в сетке категории */
 export function ProductCard({ cat, product, onPrice, delay = 0 }) {
-  const { t, name, lang } = useLang();
+  const { t, name } = useLang();
+  const pt = useProductText();
   const to = productPath(cat, product);
+  const qty = pt.format(product) || pt.pack(product);
   return (
     <Reveal as="article" className="p-card" delay={delay}>
       <Link to={to} className="p-img" tabIndex={-1} aria-hidden="true">
@@ -85,7 +89,7 @@ export function ProductCard({ cat, product, onPrice, delay = 0 }) {
             decoding="async"
           />
         ) : (
-          <span className="p-ph">{cat.name_it}</span>
+          <span className="p-ph">{name(cat)}</span>
         )}
       </Link>
       <div className="p-body">
@@ -93,11 +97,8 @@ export function ProductCard({ cat, product, onPrice, delay = 0 }) {
         <h3 className="p-name">
           <Link to={to}>{name(product)}</Link>
         </h3>
-        {product.name_it && lang === 'ru' && <div className="p-it">{product.name_it}</div>}
         <div className="p-meta">
-          {(product.format || (product.pack && product.pack[0])) && (
-            <span className="p-fmt">{product.format || product.pack.join(' · ')}</span>
-          )}
+          {qty && <span className="p-fmt">{qty}</span>}
         </div>
         <div className="p-actions">
           <button className="btn btn-outline btn-sm" onClick={() => onPrice([cat.id], product)}>

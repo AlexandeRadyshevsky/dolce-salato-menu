@@ -41,6 +41,11 @@ export function parseRoute(data) {
     if (!cat) return { page: 'notfound' };
     if (parts.length === 2) return { page: 'category', cat };
     const product = cat.products.find((p) => p.slug === parts[2]);
+    if (!product) {
+      // старый адрес карточки (переименованный слаг) → новый
+      const moved = cat.products.find((p) => (p.old_slugs || []).includes(parts[2]));
+      if (moved) return { page: 'redirect', to: '/catalog/' + cat.slug + '/' + moved.slug };
+    }
     if (!product || parts.length > 3) return { page: 'notfound' };
     return { page: 'product', cat, product };
   }

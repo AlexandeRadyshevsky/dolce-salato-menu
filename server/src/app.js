@@ -104,7 +104,9 @@ export function toCsv(rows) {
 const ADMIN_HTML = fileURLToPath(new URL('../admin/index.html', import.meta.url));
 
 export function createHandler(repo, { background = (p) => p } = {}) {
-  const allow = rateLimiter();
+  // за NAT хостинга у всех посетителей один IP — лимит по e-mail + общий потолок
+  const allowEmail = rateLimiter(5, 10 * 60 * 1000);
+  const allowGlobal = rateLimiter(120, 10 * 60 * 1000);
   const allowLogin = rateLimiter(10, 15 * 60 * 1000);
 
   const cors = (req) => {
@@ -133,7 +135,8 @@ export function createHandler(repo, { background = (p) => p } = {}) {
         const ip = clientIp(req);
         const body = await readJson(req);
         if (body.website) return send(res, 200, { ok: true }, h); // honeypot: бот
-        if (!allow(ip)) return send(res, 429, { ok: false, error: 'rate_limited' }, h);
+        const emailKey = String(body.email || '').trim().toLowerCase();
+        if (!allowEmail(emailKey) || !allowGlobal('all')) return send(res, 429, { ok: false, error: 'rate_limited' }, h);
 
         const { data, errors } = validate(body);
         if (Object.keys(errors).length) return send(res, 422, { ok: false, errors }, h);

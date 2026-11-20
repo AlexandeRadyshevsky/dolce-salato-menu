@@ -9,7 +9,7 @@ import {
   IconArrow,
   IconBulb,
   IconChart,
-  IconHandshake,
+  IconReliability,
   IconLifebuoy,
   IconMedal,
   IconPin,
@@ -23,7 +23,7 @@ export default function HomePage({ data, onPrice }) {
   const strengths = [
     [IconQuality, 'Качество', 'Qualità', 'Тщательный отбор и прямая связь с производителями.', 'Selezione accurata e rapporto diretto con i produttori.'],
     [IconBulb, 'Инновации', 'Innovazione', 'Решения для любых форматов и потребностей клиентов.', 'Soluzioni per ogni formato ed esigenza.'],
-    [IconHandshake, 'Надёжность', 'Affidabilità', 'Мы всегда держим слово и отвечаем за результат.', 'Manteniamo sempre la parola data.'],
+    [IconReliability, 'Надёжность', 'Affidabilità', 'Мы всегда держим слово и отвечаем за результат.', 'Manteniamo sempre la parola data.'],
     [IconLifebuoy, 'Поддержка клиентов', 'Assistenza', 'Наши менеджеры на связи 24/7.', 'I nostri manager sono disponibili 24/7.'],
     [IconMedal, 'Репутация', 'Reputazione', 'Бренд, признанный в HoReCa по всей России.', 'Un marchio riconosciuto nell’HoReCa in tutta la Russia.'],
     [IconChart, 'Оптимизация затрат', 'Ottimizzazione dei costi', 'Помогаем снизить food cost на 10–30%.', 'Aiutiamo a ridurre il food cost del 10–30%.'],
@@ -31,7 +31,9 @@ export default function HomePage({ data, onPrice }) {
 
   return (
     <>
-      <h1 className="sr-only">{data.site.title_ru}</h1>
+      <h1 className="sr-only">
+        {t(data.site.title_ru, 'Dolce&Salato — prodotti italiani all’ingrosso per ristoranti e HoReCa a Mosca')}
+      </h1>
       <HeroSlider data={data} onPrice={onPrice} />
 
       <section className="sec about" id="about">
