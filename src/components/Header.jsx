@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, navigate } from '../router.jsx';
 import { useLang } from '../i18n.jsx';
-import { search, productPath, asset } from '../lib/catalog.js';
+import { search, productPath, thumb } from '../lib/catalog.js';
 import { Logo } from './Art.jsx';
 import { IconArrow, IconClose, IconMenu, IconSearch } from './Icons.jsx';
 
@@ -83,7 +83,7 @@ export function SearchBox({ data, onDone, autoFocus }) {
                 go(productPath(r.cat, r.product));
               }}
             >
-              <span className="s-thumb">{r.product.image && <img src={asset(r.product.image)} alt="" loading="lazy" />}</span>
+              <span className="s-thumb">{r.product.image && <img src={thumb(r.product.image)} alt="" loading="lazy" />}</span>
               <span className="s-txt">
                 <b>{name(r.product)}</b>
                 <small>{name(r.cat)}</small>

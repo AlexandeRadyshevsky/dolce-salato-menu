@@ -1,6 +1,6 @@
 import { Link } from '../router.jsx';
 import { useLang } from '../i18n.jsx';
-import { asset, catPath, countOf, coverOf, plural, productPath } from '../lib/catalog.js';
+import { catPath, countOf, coverOf, imgSrcSet, plural, productPath, thumb } from '../lib/catalog.js';
 import useReveal from './useReveal.js';
 import { IconArrow } from './Icons.jsx';
 
@@ -76,7 +76,14 @@ export function ProductCard({ cat, product, onPrice, delay = 0 }) {
     <Reveal as="article" className="p-card" delay={delay}>
       <Link to={to} className="p-img" tabIndex={-1} aria-hidden="true">
         {product.image ? (
-          <img src={asset(product.image)} alt="" loading="lazy" />
+          <img
+            src={thumb(product.image)}
+            srcSet={imgSrcSet(product.image)}
+            sizes="(max-width: 760px) 46vw, (max-width: 1360px) 30vw, 22vw"
+            alt=""
+            loading="lazy"
+            decoding="async"
+          />
         ) : (
           <span className="p-ph">{cat.name_it}</span>
         )}

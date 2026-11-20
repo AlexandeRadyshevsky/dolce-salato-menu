@@ -23,6 +23,10 @@ export const productPath = (cat, p) => '/catalog/' + cat.slug + '/' + p.slug;
 
 export const asset = (rel) => (rel ? import.meta.env.BASE_URL + rel : null);
 
+/* Фото товара: <slug>.jpg — 1200px, <slug>-600.jpg — для карточек и поиска */
+export const thumb = (rel) => (rel ? asset(rel.replace(/\.jpg$/, '-600.jpg')) : null);
+export const imgSrcSet = (rel) => (rel ? `${thumb(rel)} 600w, ${asset(rel)} 1200w` : undefined);
+
 /* Обложка категории: обложка из PDF, для подкатегорий без своей обложки —
    фото первого товара. */
 export function coverOf(data, cat) {
