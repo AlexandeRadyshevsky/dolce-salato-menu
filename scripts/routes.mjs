@@ -46,7 +46,7 @@ const allProducts = (menu, c) => [
 ];
 
 /* Все маршруты сайта: каталог, категории, товары. */
-export function buildRoutePages(menu, builtIndexHtml) {
+export function buildRoutePages(menu, builtIndexHtml, base = '/') {
   const pages = [];
 
   pages.push({
@@ -146,33 +146,37 @@ export function buildRoutePages(menu, builtIndexHtml) {
 
   // старые адреса переименованных карточек: заглушка с переходом на новый адрес
   for (const { from, to } of redirects(menu)) {
+    const target = base + to.slice(1);
     pages.push({
       file: from.replace(/^\//, '') + 'index.html',
       html: `<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8"><title>Страница переехала</title>
 <meta name="robots" content="noindex"><link rel="canonical" href="${menu.site.url}${to.slice(1)}">
-<meta http-equiv="refresh" content="0; url=${to}"><script>location.replace(${JSON.stringify(to)})</script>
-</head><body><a href="${to}">Страница переехала</a></body></html>`,
+<meta http-equiv="refresh" content="0; url=${target}"><script>location.replace(${JSON.stringify(target)} + location.search + location.hash)</script>
+</head><body><a href="${target}">Страница переехала</a></body></html>`,
     });
   }
   return pages;
 }
 
-/* Старые адреса карточек (p.old_slugs) → новые */
+/* Старые адреса страниц → новые */
 export function redirects(menu) {
-  const out = [];
+  const out = [{ from: '/ru/', to: '/' }];
   for (const c of menu.categories)
     for (const p of c.products)
-      for (const old of p.old_slugs || [])
-        out.push({ from: `/catalog/${c.slug}/${old}/`, to: `/catalog/${c.slug}/${p.slug}/` });
+      for (const old of p.old_slugs || []) {
+        const to = `/catalog/${c.slug}/${p.slug}/`;
+        out.push({ from: `/catalog/${c.slug}/${old}/`, to });
+        out.push({ from: `/katalog/${c.slug}/${old}/`, to });
+      }
   return out;
 }
 
 /* nginx: 301 со старых адресов (подключается в конфиге сервера через include) */
 export function buildNginxRedirects(menu) {
   return (
-    '# сгенерировано при сборке (scripts/routes.mjs) — 301 со старых адресов карточек\n' +
+    '# сгенерировано при сборке (scripts/routes.mjs) — 301 со старых адресов\n' +
     redirects(menu)
-      .map(({ from, to }) => `location = ${from.slice(0, -1)} { return 301 ${to}; }\nlocation = ${from} { return 301 ${to}; }`)
+      .map(({ from, to }) => `location = ${from.slice(0, -1)} { return 301 ${to}$is_args$args; }\nlocation = ${from} { return 301 ${to}$is_args$args; }`)
       .join('\n') +
     '\n'
   );

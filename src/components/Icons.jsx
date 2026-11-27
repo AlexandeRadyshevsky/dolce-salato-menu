@@ -72,9 +72,9 @@ export const IconShield = (p) => (
 );
 export const IconTruck = (p) => (
   <S {...p}>
-    <path d="M2.5 6.5h11v9.5h-11zM13.5 9.5h4.2l3.3 3.6v2.9h-7.5" />
-    <circle cx="6.5" cy="17.5" r="1.8" />
-    <circle cx="17" cy="17.5" r="1.8" />
+    <path d="M4.5 17H2.75V7a1 1 0 0 1 1-1h8.5a1 1 0 0 1 1 1v10M7.5 17h8.75M13.25 9h4.5l3.5 4v4h-2" />
+    <circle cx="6" cy="18" r="1.75" />
+    <circle cx="17.75" cy="18" r="1.75" />
   </S>
 );
 export const IconPin = (p) => (

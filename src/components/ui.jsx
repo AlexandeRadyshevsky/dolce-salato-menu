@@ -1,6 +1,6 @@
 import { Link } from '../router.jsx';
 import { useLang, useProductText } from '../i18n.jsx';
-import { catPath, countOf, coverOf, coverPos, imgSrcSet, plural, productPath, thumb } from '../lib/catalog.js';
+import { catPath, countOf, coverOf, imgSrcSet, plural, productPath, thumb } from '../lib/catalog.js';
 import useReveal from './useReveal.js';
 import { IconArrow } from './Icons.jsx';
 
@@ -43,8 +43,8 @@ export function CategoryTile({ data, cat, delay = 0, showCount }) {
   return (
     <Reveal as="div" className="cat-tile-wrap" delay={delay}>
       <Link to={catPath(cat)} className="cat-tile">
-        <span className="ct-img">
-          {img && <img src={img} alt={cat.name_ru} loading="lazy" style={{ objectPosition: coverPos(cat) }} />}
+        <span className={cat.tile_cover ? 'ct-img ct-img-contain' : 'ct-img'}>
+          {img && <img src={img} alt={cat.name_ru} loading="lazy" />}
         </span>
         <span className="ct-body">
           <span className="ct-name">
@@ -82,7 +82,7 @@ export function ProductCard({ cat, product, onPrice, delay = 0 }) {
         {product.image ? (
           <img
             src={thumb(product.image)}
-            srcSet={imgSrcSet(product.image)}
+            srcSet={imgSrcSet(product.image, product.image_width)}
             sizes="(max-width: 760px) 46vw, (max-width: 1360px) 30vw, 22vw"
             alt=""
             loading="lazy"

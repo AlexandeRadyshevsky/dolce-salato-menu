@@ -1,9 +1,12 @@
 // Письмо менеджеру о новой заявке «Запросить прайс-лист».
 import nodemailer from 'nodemailer';
 import { config, categoryName, productName } from './config.js';
+import { trackJob } from './jobs.js';
 
 let transport = null;
-export const enabled = () => Boolean(config.mail.host && config.mail.to.length);
+export const enabled = () => Boolean(config.mail.host && config.mail.from && config.mail.to.length &&
+  (!config.mail.user || config.mail.pass));
+const jobs = new Map();
 
 function getTransport() {
   if (!transport) {
@@ -12,6 +15,9 @@ function getTransport() {
       port: config.mail.port,
       secure: config.mail.secure,
       auth: config.mail.user ? { user: config.mail.user, pass: config.mail.pass } : undefined,
+      connectionTimeout: 15_000,
+      greetingTimeout: 15_000,
+      socketTimeout: 30_000,
     });
   }
   return transport;
@@ -30,13 +36,13 @@ export function buildMessage(r) {
     ['Товар', r.product ? productName(r.product) : ''],
     ['Комментарий', r.comment || ''],
     ['Страница', r.page || ''],
-    ['Дата', new Date().toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' })],
+    ['Дата', new Date(r.created_at ?? Date.now()).toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' })],
   ].filter(([, v]) => v);
   return {
     from: config.mail.from,
     to: config.mail.to,
     replyTo: r.email,
-    subject: `Запрос прайс-листа: ${r.company} (${r.name})`,
+    subject: `${r.product ? 'Запрос о товаре' : 'Запрос прайс-листа'}: ${r.company} (${r.name})`,
     text: rows.map(([k, v]) => `${k}: ${v}`).join('\n'),
     html:
       '<h2 style="font-family:Arial">Новая заявка с сайта dolcesalato.ru</h2><table style="font-family:Arial;font-size:14px;border-collapse:collapse">' +
@@ -50,13 +56,29 @@ export function buildMessage(r) {
   };
 }
 
-export async function notify(r) {
-  if (!enabled()) return 'off';
-  try {
-    await getTransport().sendMail(buildMessage(r));
-    return 'ok';
-  } catch (e) {
-    console.error('[mail]', e.message);
-    return 'error';
-  }
+export function notifyRequest(repo, id) {
+  return trackJob(jobs, id, async () => {
+    const request = repo.requestForMail(id);
+    if (!request || request.mail_status === 'ok') return;
+    const delivered = new Set(JSON.parse(request.mail_delivered));
+    if (!enabled()) {
+      repo.setMail(id, 'off', [...delivered]);
+      return;
+    }
+    const message = buildMessage({ ...request, categories: JSON.parse(request.categories) });
+    for (const address of message.to) {
+      if (delivered.has(address)) continue;
+      try {
+        const result = await getTransport().sendMail({ ...message, to: address });
+        if (!(result.accepted || []).some((candidate) => candidate.toLowerCase() === address.toLowerCase())) {
+          throw new Error('SMTP не принял адрес получателя');
+        }
+        delivered.add(address);
+        repo.setMail(id, 'pending', [...delivered]);
+      } catch (e) {
+        console.error('[mail]', e.message);
+      }
+    }
+    repo.setMail(id, message.to.every((address) => delivered.has(address)) ? 'ok' : 'error', [...delivered]);
+  });
 }

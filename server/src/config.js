@@ -16,7 +16,7 @@ function json(name, fallback) {
 }
 
 const menuPath = path.resolve(here, '..', env.MENU_PATH || '../src/data/menu.json');
-const menu = JSON.parse(fs.readFileSync(menuPath, 'utf-8'));
+export const menu = JSON.parse(fs.readFileSync(menuPath, 'utf-8'));
 
 export const config = {
   port: Number(env.PORT || 3001),
@@ -49,6 +49,7 @@ export const config = {
     mainListId: env.UNISENDER_MAIN_LIST_ID || '',
     // { "<id категории из menu.json>": <list_id в Unisender>, ... }
     segmentLists: json('UNISENDER_SEGMENT_LISTS', {}),
+    phoneField: env.UNISENDER_PHONE_FIELD || '',
     // 3 — согласие получено на сайте, контакт сразу активен (без письма-подтверждения)
     doubleOptin: env.UNISENDER_DOUBLE_OPTIN || '3',
   },

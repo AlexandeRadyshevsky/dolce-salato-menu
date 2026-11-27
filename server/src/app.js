@@ -11,8 +11,9 @@
 //   (всё /api/admin/* — по сессии или заголовку Authorization: Bearer ADMIN_TOKEN)
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { config, categoryIds, categoryName, productName } from './config.js';
+import { config, menu, categoryIds, categoryName, productName } from './config.js';
 import { clearCookie, isAdmin, passwordOk, sessionCookie } from './auth.js';
+import { editableProducts, findProduct, validateProductEdit } from './catalog.js';
 import * as unisender from './unisender.js';
 import * as mailer from './mailer.js';
 
@@ -32,6 +33,15 @@ export function validate(body) {
       categoryIds.has(c)
     ),
   };
+  if (r.product) {
+    const possible = menu.categories.filter((category) => category.products.some((product) => product.slug === r.product));
+    const pagePath = URL.canParse(r.page) ? new URL(r.page).pathname : '';
+    const category = possible.find((c) => pagePath.replace(/\/$/, '') === `/catalog/${c.slug}/${r.product}`)
+      ?? possible.find((c) => c.id === body.productCategory)
+      ?? possible.find((c) => r.categories.includes(c.id))
+      ?? (possible.length === 1 ? possible[0] : null);
+    if (category && !r.categories.includes(category.id)) r.categories.push(category.id);
+  }
   const errors = {};
   if (!r.name) errors.name = 'required';
   if (!r.company) errors.company = 'required';
@@ -131,6 +141,10 @@ export function createHandler(repo, { background = (p) => p } = {}) {
 
       if (path === '/api/health') return send(res, 200, { ok: true }, h);
 
+      if (path === '/api/catalog' && req.method === 'GET') {
+        return send(res, 200, repo.catalogEdits(), h);
+      }
+
       if (path === '/api/price-request' && req.method === 'POST') {
         const ip = clientIp(req);
         const body = await readJson(req);
@@ -143,13 +157,7 @@ export function createHandler(repo, { background = (p) => p } = {}) {
 
         const { contactId, requestId } = repo.saveRequest({ ...data, ip, userAgent: clip(req.headers['user-agent'], 300) });
 
-        // письмо и Unisender — после ответа, статусы пишутся в БД (повтор: npm run sync)
-        background(
-          (async () => {
-            repo.setMail(requestId, await mailer.notify(data));
-            await unisender.syncContact(repo, contactId);
-          })()
-        );
+        background(Promise.all([mailer.notifyRequest(repo, requestId), unisender.syncContact(repo, contactId)]));
         return send(res, 201, { ok: true, id: requestId }, h);
       }
 
@@ -175,6 +183,20 @@ export function createHandler(repo, { background = (p) => p } = {}) {
       }
 
       if (path.startsWith('/api/admin/') && !isAdmin(req)) return send(res, 401, { ok: false }, h);
+
+      if (path === '/api/admin/catalog' && req.method === 'GET') {
+        return send(res, 200, editableProducts(repo), h);
+      }
+
+      if (path === '/api/admin/catalog' && req.method === 'POST') {
+        const body = await readJson(req, 100_000);
+        if (!body || !findProduct(body.category, body.slug)) return send(res, 404, { ok: false }, h);
+        const { values, errors } = validateProductEdit(body);
+        if (Object.keys(errors).length) return send(res, 422, { ok: false, errors }, h);
+        const revision = repo.updateCatalog(body.category, body.slug, body.revision, values);
+        if (revision === null) return send(res, 409, { ok: false }, h);
+        return send(res, 200, { ok: true, revision }, h);
+      }
 
       if (path === '/api/admin/stats' && req.method === 'GET') {
         return send(res, 200, {

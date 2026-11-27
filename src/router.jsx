@@ -34,7 +34,11 @@ export function navigate(to, { replace = false } = {}) {
 export function parseRoute(data) {
   const parts = currentPath().split('/').filter(Boolean);
   if (parts.length === 0) return { page: 'home' };
-  if (parts[0] === 'katalog') return { page: 'redirect', to: '/catalog/' + parts.slice(1).join('/') };
+  if (parts[0] === 'katalog') {
+    const cat = findCategory(data, parts[1]);
+    const moved = parts.length === 3 && cat?.products.find((p) => (p.old_slugs || []).includes(parts[2]));
+    return { page: 'redirect', to: moved ? `/catalog/${cat.slug}/${moved.slug}` : '/catalog/' + parts.slice(1).join('/') };
+  }
   if (parts[0] === 'catalog') {
     if (parts.length === 1) return { page: 'catalog', q: new URLSearchParams(window.location.search).get('q') || '' };
     const cat = findCategory(data, parts[1]);
@@ -62,7 +66,7 @@ export function useRoute(data) {
     return () => window.removeEventListener('popstate', onPop);
   }, [data]);
   useEffect(() => {
-    if (route.page === 'redirect') navigate(route.to, { replace: true });
+    if (route.page === 'redirect') navigate(route.to + window.location.search + window.location.hash, { replace: true });
   }, [route]);
   return route;
 }

@@ -35,7 +35,7 @@ function seoRoutePages() {
       const indexFile = path.join(dist, 'index.html');
       if (!fs.existsSync(indexFile)) return;
       const html = fs.readFileSync(indexFile, 'utf-8');
-      for (const page of buildRoutePages(menu, html)) {
+      for (const page of buildRoutePages(menu, html, process.env.BASE || '/')) {
         const f = path.join(dist, page.file);
         fs.mkdirSync(path.dirname(f), { recursive: true });
         fs.writeFileSync(f, page.html);

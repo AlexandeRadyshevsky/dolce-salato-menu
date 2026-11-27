@@ -38,7 +38,7 @@ export default function CategoryPage({ data, cat, onPrice }) {
         </div>
         {cover && (
           <div className="cat-hero-img">
-            <img src={cover} alt={cat.name_ru} style={{ objectPosition: coverPos(cat) }} />
+            <img src={cover} alt={cat.name_ru} />
           </div>
         )}
       </header>

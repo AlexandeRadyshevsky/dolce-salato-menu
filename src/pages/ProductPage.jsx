@@ -37,7 +37,9 @@ export default function ProductPage({ data, cat, product, onPrice }) {
 
       <article className="prod">
         <div className="prod-img">
-          {product.image ? <img src={asset(product.image)} alt={name(product)} /> : null}
+          {product.image && (
+            <img src={asset(product.image)} alt={name(product)} />
+          )}
         </div>
         <div className="prod-info">
           <Eyebrow>{name(cat)}</Eyebrow>

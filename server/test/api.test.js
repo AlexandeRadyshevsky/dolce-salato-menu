@@ -5,6 +5,7 @@ import http from 'node:http';
 process.env.UNISENDER_API_KEY = 'test-key';
 process.env.UNISENDER_MAIN_LIST_ID = '100';
 process.env.UNISENDER_SEGMENT_LISTS = JSON.stringify({ pasta: 201, olio: 202 });
+process.env.UNISENDER_PHONE_FIELD = 'ds_phone';
 process.env.ADMIN_TOKEN = 'secret';
 process.env.ADMIN_PASSWORD = 'pass-123';
 process.env.COOKIE_SECURE = '0';
@@ -72,7 +73,8 @@ test('в Unisender: основной список + списки сегмент�
   // verdura без своего списка — только тег
   assert.deepEqual(p.get('list_ids').split(',').sort(), ['100', '201', '202']);
   assert.equal(p.get('fields[email]'), 'mario@example.com');
-  assert.equal(p.get('fields[phone]'), '+79001234567');
+  assert.equal(p.get('fields[ds_phone]'), '+79001234567');
+  assert.equal(p.has('fields[phone]'), false);
   assert.equal(p.get('fields[company]'), 'Trattoria');
   assert.match(p.get('tags'), /Паста/);
   assert.match(p.get('tags'), /Овощи/);
@@ -176,4 +178,39 @@ test('письмо о заявке уходит на все адреса из MA
   assert.deepEqual(m.to, ['ds.zakaz@gmail.com', 'massimo.dolcesalato@gmail.com']);
   assert.equal(m.replyTo, 'mario@example.com');
   assert.match(m.text, /Паста/);
+});
+
+test('запрос о товаре добавляет его категорию, даже если её сняли в форме', async () => {
+  const res = await post({
+    ...valid,
+    email: 'product@example.com',
+    product: 'pakkeri-fiordimonte-optom',
+    categories: ['olio'],
+    page: 'https://dolcesalato.ru/catalog/pasta/pakkeri-fiordimonte-optom/',
+  });
+  assert.equal(res.status, 201);
+  await Promise.all(pending);
+  const contact = repo.raw.prepare('SELECT id FROM contacts WHERE email = ?').get('product@example.com');
+  assert.deepEqual(repo.segments(contact.id).sort(), ['main', 'olio', 'pasta']);
+  assert.deepEqual(uniCalls.at(-1).get('list_ids').split(',').sort(), ['100', '201', '202']);
+});
+
+test('редактор публикует карточку только после авторизации и отклоняет устаревшую правку', async () => {
+  const admin = base + '/api/admin/catalog';
+  const headers = { Authorization: 'Bearer secret', 'Content-Type': 'application/json' };
+  assert.equal((await realFetch(admin)).status, 401);
+  const { categories } = await (await realFetch(admin, { headers })).json();
+  const category = categories.find((item) => item.id === 'pasta');
+  const product = category.products.find((item) => item.slug === 'pakkeri-fiordimonte-optom');
+  const values = { ...product.values, name_ru: 'Паккери Fiordimonte, 500 г' };
+  const body = { category: category.id, slug: product.slug, revision: 0, values };
+  const save = (payload, extraHeaders = headers) =>
+    realFetch(admin, { method: 'POST', headers: extraHeaders, body: JSON.stringify(payload) });
+
+  assert.equal((await save(body, { 'Content-Type': 'application/json' })).status, 401);
+  assert.equal((await save({ ...body, values: { ...values, name_ru: '' } })).status, 422);
+  assert.deepEqual(await (await save(body)).json(), { ok: true, revision: 1 });
+  assert.equal((await save(body)).status, 409);
+  const publicEdits = await (await realFetch(base + '/api/catalog')).json();
+  assert.deepEqual(publicEdits, [{ category: category.id, slug: product.slug, revision: 1, values }]);
 });

@@ -3,8 +3,10 @@
 // по выбранным категориям. Дополнительно категории пишутся тегами — по ним
 // тоже можно строить сегменты внутри Unisender. Телефон хранится в карточке.
 import { config, categoryName } from './config.js';
+import { trackJob } from './jobs.js';
 
 const API = 'https://api.unisender.com';
+const jobs = new Map();
 
 export const enabled = () => Boolean(config.unisender.apiKey && config.unisender.mainListId);
 
@@ -37,7 +39,8 @@ export function subscribeParams(contact, segments) {
     overwrite: '2', // обновлять только переданные поля, списки — добавлять
   });
   const phone = normalizePhone(contact.phone);
-  if (phone) p.set('fields[phone]', phone);
+  // Системное поле phone участвует в идентификации контакта и SMS-подписке.
+  if (phone && config.unisender.phoneField) p.set(`fields[${config.unisender.phoneField}]`, phone);
   if (contact.company) p.set('fields[company]', contact.company);
   // Unisender принимает до 10 тегов за запрос
   const tags = cats.map(categoryName).slice(0, 10);
@@ -62,22 +65,31 @@ export async function call(method, params) {
 }
 
 export async function subscribe(contact, segments) {
-  return call('subscribe', subscribeParams(contact, segments));
+  const result = await call('subscribe', subscribeParams(contact, segments));
+  if (!result?.person_id) throw new Error('Unisender: не подтверждено сохранение контакта');
+  return result;
 }
 
 /* Синхронизация одного контакта с записью статуса в БД */
-export async function syncContact(repo, contactId) {
-  if (!enabled()) {
-    repo.setSync(contactId, 'off');
-    return 'off';
-  }
-  try {
-    await subscribe(repo.contact(contactId), repo.segments(contactId));
-    repo.setSync(contactId, 'ok');
-    return 'ok';
-  } catch (e) {
-    repo.setSync(contactId, 'error', String(e.message).slice(0, 500));
-    console.error('[unisender]', e.message);
-    return 'error';
-  }
+export function syncContact(repo, contactId) {
+  return trackJob(jobs, contactId, async () => {
+    for (;;) {
+      const contact = repo.contact(contactId);
+      if (!contact || contact.sync_status === 'ok') return 'ok';
+      if (!enabled()) {
+        repo.setSync(contact, 'off');
+        return 'off';
+      }
+      let status = 'ok';
+      let error = null;
+      try {
+        await subscribe(contact, repo.segments(contactId));
+      } catch (e) {
+        status = 'error';
+        error = String(e.message).slice(0, 500);
+        console.error('[unisender]', error);
+      }
+      if (repo.setSync(contact, status, error)) return status;
+    }
+  });
 }

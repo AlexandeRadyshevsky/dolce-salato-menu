@@ -899,15 +899,26 @@ p {
   transition: box-shadow 0.35s var(--ease), transform 0.35s var(--ease);
 }
 .ct-img {
+  --cover-scale: 1.08;
+  position: relative;
+  flex: none;
+  width: 100%;
   aspect-ratio: 4 / 3;
   overflow: hidden;
   background: #fff;
 }
 .ct-img img {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.8s var(--ease);
+  object-position: center;
+  transform: scale(var(--cover-scale));
+}
+.ct-img-contain img {
+  object-fit: contain;
+  transform: none;
 }
 .ct-body {
   flex: 1;
@@ -934,9 +945,6 @@ p {
 .cat-tile:hover {
   box-shadow: 0 18px 36px -22px rgba(22, 29, 25, 0.45);
   transform: translateY(-3px);
-}
-.cat-tile:hover .ct-img img {
-  transform: scale(1.05);
 }
 .cat-tile:hover .arrow-circle,
 .p-card:hover .p-more .arrow-circle {
@@ -1285,14 +1293,12 @@ p {
   margin-top: 24px;
 }
 .cat-hero-img {
-  height: 100%;
-  min-height: 260px;
-  max-height: 380px;
+  aspect-ratio: 4 / 3;
 }
 .cat-hero-img img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
 }
 .subcats {
   display: flex;
@@ -1343,19 +1349,23 @@ p {
   border-color: #d9d3c4;
   box-shadow: 0 18px 36px -24px rgba(22, 29, 25, 0.45);
 }
+:is(.p-img, .prod-img) {
+  background: #f0e3d9;
+}
 .p-img {
   display: block;
+  isolation: isolate;
   aspect-ratio: 1 / 1;
   overflow: hidden;
-  /* фото уже приведены к единому виду: товар по центру квадрата с полями */
-  padding: 4px;
-  background: #fff;
 }
 .p-img img {
   width: 100%;
   height: 100%;
   object-fit: contain;
   transition: transform 0.7s var(--ease);
+}
+:is(.p-img, .prod-img) img {
+  mix-blend-mode: darken;
 }
 .p-card:hover .p-img img {
   transform: scale(1.04);
@@ -1429,13 +1439,12 @@ p {
 }
 .prod-img {
   overflow: hidden;
+  isolation: isolate;
   position: sticky;
   top: calc(var(--header-h) + 20px);
   aspect-ratio: 1 / 1;
-  background: #fff;
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  padding: clamp(8px, 1.5vw, 20px);
 }
 .prod-img img {
   width: 100%;
@@ -1960,8 +1969,11 @@ p {
     margin-bottom: 12px;
   }
   .cat-grid {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 10px;
+  }
+  .ct-img {
+    --cover-scale: 1.12;
   }
   .ct-body {
     padding: 10px 10px 12px;
@@ -2006,20 +2018,16 @@ p {
   .pf-modal .pf-cat-list {
     grid-template-columns: 1fr 1fr;
   }
-  .cat-hero {
+  .cat-hero,
+  .cat-hero.img-left {
     grid-template-columns: 1fr;
   }
   .cat-hero-img {
     order: -1;
-    min-height: 200px;
-    max-height: 240px;
   }
   .p-grid {
     grid-template-columns: 1fr 1fr;
     gap: 10px;
-  }
-  .p-img {
-    padding: 2px;
   }
   .p-body {
     padding: 12px;

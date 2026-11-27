@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="robots" content="noindex, nofollow" />
-<title>Заявки — Dolce&amp;Salato</title>
+<title>Панель управления — Dolce&amp;Salato</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -51,6 +51,16 @@
   .toolbar input, .toolbar select { padding: 9px 12px; border: 1px solid var(--line); border-radius: 8px; background: #fff; min-width: 0; }
   .toolbar input { flex: 1 1 240px; }
   .toolbar select { flex: 0 1 300px; }
+  .tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+  .catalog-edit { max-width: 900px; }
+  .catalog-edit .toolbar select { flex: 1 1 230px; }
+  .catalog-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 15px; margin: 20px 0; }
+  .catalog-fields label { display: grid; gap: 5px; align-content: start; font-weight: 700; }
+  .catalog-fields input, .catalog-fields textarea { width: 100%; padding: 9px 12px; border: 1px solid var(--line); border-radius: 8px; font: inherit; font-weight: 400; }
+  .catalog-fields textarea { resize: vertical; }
+  .catalog-image { width: 96px; height: 96px; object-fit: contain; border: 1px solid var(--line); border-radius: 8px; }
+  .catalog-preview { display: flex; gap: 14px; align-items: center; }
+  #catalog-status { margin-left: 12px; }
   .seg-note { color: var(--muted); font-size: 12.5px; margin: -4px 0 12px; }
 
   .tbl-wrap { overflow-x: auto; }
@@ -79,6 +89,7 @@
     header, main { padding-left: 14px; padding-right: 14px; }
     .stats { grid-template-columns: 1fr 1fr; }
     .user-hide { display: none; }
+    .catalog-fields { grid-template-columns: 1fr; }
   }
 </style>
 </head>
@@ -87,7 +98,7 @@
 <section class="login hidden" id="login">
   <form id="login-form">
     <div class="brand">dolce<span>&amp;</span>salato</div>
-    <p>Заявки «Запросить прайс-лист»</p>
+    <p>Каталог и заявки с сайта</p>
     <input type="password" id="pw" placeholder="Пароль" autocomplete="current-password" required autofocus />
     <button class="btn btn-green" type="submit">Войти</button>
     <div class="err" id="login-err"></div>
@@ -97,12 +108,16 @@
 <section class="hidden" id="app">
   <header>
     <div class="brand">dolce<span>&amp;</span>salato</div>
-    <span class="user-hide" style="color:var(--muted)">Заявки с сайта</span>
     <span class="sp"></span>
     <a class="btn btn-ghost" id="csv" href="#">Скачать CSV</a>
     <button class="btn btn-ghost" id="logout">Выйти</button>
   </header>
   <main>
+    <nav class="tabs" aria-label="Разделы панели управления">
+      <button type="button" class="btn btn-green" id="open-requests" aria-pressed="true">Заявки</button>
+      <button type="button" class="btn btn-ghost" id="open-catalog" aria-pressed="false">Каталог</button>
+    </nav>
+    <div id="requests-panel">
     <div class="stats" id="stats"></div>
     <div class="panel">
       <div class="toolbar">
@@ -123,6 +138,22 @@
       </div>
       <div class="pager"><span id="total"></span><div><button class="btn btn-ghost" id="prev">←</button><button class="btn btn-ghost" id="next">→</button></div></div>
     </div>
+    </div>
+    <section class="panel catalog-edit hidden" id="catalog-panel" aria-label="Редактирование каталога">
+      <div class="toolbar">
+        <select id="catalog-category" aria-label="Категория"></select>
+        <select id="catalog-product" aria-label="Товар"></select>
+      </div>
+      <div class="catalog-preview">
+        <img class="catalog-image" id="catalog-image" alt="" />
+        <a id="catalog-link" target="_blank" rel="noopener">Открыть карточку на сайте</a>
+      </div>
+      <form id="catalog-form">
+        <div class="catalog-fields" id="catalog-fields"></div>
+        <button type="submit" class="btn btn-green" id="catalog-save">Сохранить на сайте</button>
+        <span role="status" id="catalog-status"></span>
+      </form>
+    </section>
   </main>
 </section>
 
@@ -131,6 +162,10 @@
   const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
   const ST = { ok: 'отправлено', error: 'ошибка', pending: 'в очереди', off: 'не настроено' };
   const state = { page: 1, pages: 1, segment: '', q: '', cats: {} };
+  let catalog;
+  let selection;
+  let dirty = false;
+  const options = (items) => items.map(([id, label]) => `<option value="${esc(id)}">${esc(label)}</option>`).join('');
 
   async function api(path, opts = {}) {
     const res = await fetch(path, { credentials: 'same-origin', ...opts });
@@ -141,6 +176,108 @@
     $('login').classList.toggle('hidden', which !== 'login');
     $('app').classList.toggle('hidden', which !== 'app');
   }
+
+  function fillCatalogForm(product) {
+    selection = product;
+    dirty = false;
+    $('catalog-status').textContent = '';
+    $('catalog-save').disabled = false;
+    $('catalog-link').href = product.url;
+    $('catalog-image').classList.toggle('hidden', !product.image);
+    if (product.image) $('catalog-image').src = '/' + product.image;
+    const fields = Object.entries(catalog.fields).map(([key, [label, limit, required]]) => {
+      const field = document.createElement(limit > 500 ? 'textarea' : 'input');
+      field.name = key;
+      field.maxLength = limit;
+      field.required = Boolean(required);
+      field.value = product.values[key];
+      if (field.tagName === 'TEXTAREA') field.rows = 4;
+      const wrapper = document.createElement('label');
+      wrapper.append(label, field);
+      return wrapper;
+    });
+    $('catalog-fields').replaceChildren(...fields);
+  }
+
+  function selectCategory(category) {
+    $('catalog-category').value = category.id;
+    $('catalog-product').innerHTML = options(category.products.map((product) => [product.slug, product.values.name_ru]));
+    fillCatalogForm(category.products[0]);
+  }
+
+  let activeCategory;
+  $('open-catalog').onclick = async () => {
+    if (!catalog) {
+      try {
+        catalog = await api('/api/admin/catalog');
+        $('catalog-category').innerHTML = options(catalog.categories.map((category) => [category.id, category.name]));
+        activeCategory = catalog.categories[0];
+        selectCategory(activeCategory);
+      } catch {
+        catalog = null;
+        alert('Не удалось открыть каталог. Попробуйте ещё раз.');
+        return;
+      }
+    }
+    toggleCatalog(true);
+  };
+
+  function toggleCatalog(open) {
+    $('catalog-panel').classList.toggle('hidden', !open);
+    $('requests-panel').classList.toggle('hidden', open);
+    $('csv').classList.toggle('hidden', open);
+    $('open-catalog').className = 'btn ' + (open ? 'btn-green' : 'btn-ghost');
+    $('open-requests').className = 'btn ' + (open ? 'btn-ghost' : 'btn-green');
+    $('open-catalog').setAttribute('aria-pressed', open);
+    $('open-requests').setAttribute('aria-pressed', !open);
+  }
+
+  $('open-requests').onclick = () => toggleCatalog(false);
+  const canLeave = () => !dirty || confirm('Перейти к другому товару без сохранения?');
+  $('catalog-category').onchange = (event) => {
+    if (!canLeave()) {
+      event.target.value = activeCategory.id;
+      return;
+    }
+    activeCategory = catalog.categories.find((category) => category.id === event.target.value);
+    selectCategory(activeCategory);
+  };
+  $('catalog-product').onchange = (event) => {
+    if (!canLeave()) {
+      event.target.value = selection.slug;
+      return;
+    }
+    fillCatalogForm(activeCategory.products.find((product) => product.slug === event.target.value));
+  };
+  $('catalog-form').oninput = () => { dirty = true; };
+  $('catalog-form').onsubmit = async (event) => {
+    event.preventDefault();
+    const values = Object.fromEntries(new FormData(event.target));
+    const controls = [$('catalog-category'), $('catalog-product'), ...event.target.elements];
+    controls.forEach((control) => { control.disabled = true; });
+    $('catalog-status').textContent = 'Сохраняем…';
+    try {
+      const res = await fetch('/api/admin/catalog', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ category: activeCategory.id, slug: selection.slug, revision: selection.revision, values }),
+      });
+      if (res.status === 401) show('login');
+      if (res.status === 409) {
+        $('catalog-status').textContent = 'Карточку уже изменили. Обновите страницу перед повторным сохранением.';
+        return;
+      }
+      if (!res.ok) throw new Error('save failed');
+      selection.revision = (await res.json()).revision;
+      selection.values = values;
+      $('catalog-product').selectedOptions[0].textContent = values.name_ru.trim();
+      dirty = false;
+      $('catalog-status').textContent = 'Изменения опубликованы.';
+    } catch {
+      $('catalog-status').textContent = 'Не удалось сохранить. Попробуйте ещё раз.';
+    } finally {
+      controls.forEach((control) => { control.disabled = false; });
+    }
+  };
 
   $('login-form').addEventListener('submit', async (e) => {
     e.preventDefault();

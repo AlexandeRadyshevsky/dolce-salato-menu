@@ -42,7 +42,15 @@ CREATE TABLE IF NOT EXISTS contact_segments (
   PRIMARY KEY (contact_id, segment)
 );
 CREATE INDEX IF NOT EXISTS idx_requests_created ON requests(created_at);
+CREATE INDEX IF NOT EXISTS idx_requests_contact ON requests(contact_id);
 CREATE INDEX IF NOT EXISTS idx_segments_segment ON contact_segments(segment);
+CREATE TABLE IF NOT EXISTS catalog_edits (
+  category TEXT NOT NULL,
+  slug TEXT NOT NULL,
+  revision INTEGER NOT NULL,
+  fields TEXT NOT NULL,
+  PRIMARY KEY (category, slug)
+);
 `;
 
 export function openDb(file) {
@@ -51,6 +59,11 @@ export function openDb(file) {
   db.pragma('journal_mode = WAL');
   db.pragma('foreign_keys = ON');
   db.exec(SCHEMA);
+  db.transaction(() => {
+    if (!db.pragma('table_info(requests)').some((column) => column.name === 'mail_delivered')) {
+      db.exec("ALTER TABLE requests ADD COLUMN mail_delivered TEXT NOT NULL DEFAULT '[]'");
+    }
+  }).immediate();
   return createRepo(db);
 }
 
@@ -69,6 +82,15 @@ function createRepo(db) {
     'INSERT OR IGNORE INTO contact_segments (contact_id, segment, created_at) VALUES (?, ?, ?)'
   );
   const segmentsOf = db.prepare('SELECT segment FROM contact_segments WHERE contact_id = ? ORDER BY created_at');
+  const getCatalogEdit = db.prepare('SELECT revision FROM catalog_edits WHERE category = ? AND slug = ?');
+  const saveCatalogEdit = db.prepare(`INSERT INTO catalog_edits (category, slug, revision, fields)
+    VALUES (?, ?, ?, ?) ON CONFLICT(category, slug) DO UPDATE SET revision = excluded.revision, fields = excluded.fields`);
+  const updateCatalog = db.transaction((category, slug, revision, values) => {
+    const current = getCatalogEdit.get(category, slug)?.revision ?? 0;
+    if (revision !== current) return null;
+    saveCatalogEdit.run(category, slug, current + 1, JSON.stringify(values));
+    return current + 1;
+  });
 
   /* Сохраняет заявку: карточка контакта (по e-mail) + заявка + сегменты.
      Повторная заявка того же e-mail обновляет карточку и добавляет новые сегменты. */
@@ -100,21 +122,33 @@ function createRepo(db) {
   return {
     raw: db,
     saveRequest,
-    contact: (id) => db.prepare('SELECT * FROM contacts WHERE id = ?').get(id),
+    catalogEdits: () => db.prepare('SELECT category, slug, revision, fields FROM catalog_edits').all()
+      .map(({ fields, ...edit }) => ({ ...edit, values: JSON.parse(fields) })),
+    updateCatalog: updateCatalog.immediate,
+    contact: (id) => db.prepare(`SELECT c.*,
+      (SELECT MAX(r.id) FROM requests r WHERE r.contact_id = c.id) AS last_request_id
+      FROM contacts c WHERE c.id = ?`).get(id),
     request: (id) => db.prepare('SELECT * FROM requests WHERE id = ?').get(id),
+    requestForMail: (id) => db.prepare('SELECT r.*, c.email FROM requests r JOIN contacts c ON c.id = r.contact_id WHERE r.id = ?').get(id),
     segments: (contactId) => segmentsOf.all(contactId).map((s) => s.segment),
-    setSync(contactId, status, error = null) {
-      db.prepare('UPDATE contacts SET sync_status = ?, sync_error = ?, synced_at = ? WHERE id = ?').run(
+    setSync(contact, status, error = null) {
+      return db.prepare(`UPDATE contacts SET sync_status = ?, sync_error = ?, synced_at = ?
+        WHERE id = ? AND updated_at = ?
+        AND (SELECT MAX(r.id) FROM requests r WHERE r.contact_id = contacts.id) IS ?`).run(
         status,
         error,
         status === 'ok' ? now() : null,
-        contactId
-      );
+        contact.id,
+        contact.updated_at,
+        contact.last_request_id
+      ).changes;
     },
-    setMail(requestId, status) {
-      db.prepare('UPDATE requests SET mail_status = ? WHERE id = ?').run(status, requestId);
+    setMail(requestId, status, delivered) {
+      db.prepare('UPDATE requests SET mail_status = ?, mail_delivered = ? WHERE id = ?')
+        .run(status, JSON.stringify(delivered), requestId);
     },
-    pendingSync: () => db.prepare("SELECT id FROM contacts WHERE sync_status IN ('pending','error') ORDER BY id").all(),
+    pendingMail: () => db.prepare("SELECT id FROM requests WHERE mail_status IN ('pending','error','off') ORDER BY id").all(),
+    pendingSync: () => db.prepare("SELECT id FROM contacts WHERE sync_status IN ('pending','error','off') ORDER BY id").all(),
     segmentCounts: () =>
       db.prepare('SELECT segment, COUNT(*) AS contacts FROM contact_segments GROUP BY segment ORDER BY contacts DESC').all(),
     /* ---------- админка ---------- */

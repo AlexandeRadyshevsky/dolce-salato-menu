@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from '../router.jsx';
 import { useLang } from '../i18n.jsx';
 import { IconArrow, IconCheck } from './Icons.jsx';
+import { trackPriceRequest } from '../lib/metrika.js';
 
 const API = (import.meta.env.VITE_API_URL || '/api').replace(/\/$/, '');
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
@@ -47,12 +48,14 @@ export default function PriceForm({ data, preset = [], product = null, variant =
           ...form,
           categories: cats,
           product: product ? product.slug : undefined,
+          productCategory: product ? preset[0] : undefined,
           consent: true,
           page: window.location.href,
         }),
       });
       if (!res.ok) throw new Error('HTTP ' + res.status);
       setStatus('done');
+      if (res.status === 201) trackPriceRequest();
       onDone && onDone();
     } catch (err) {
       console.error(err);
