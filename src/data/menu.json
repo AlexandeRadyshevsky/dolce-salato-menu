@@ -1014,7 +1014,7 @@
    "name_it": "Farro",
    "order": 8,
    "cover": "images/categories/farro.jpg",
-   "tile_cover": "images/categories/farro-grains-tile.jpg",
+   "tile_cover": "images/categories/farro-spelt-tile.jpg",
    "products": [
     {
      "slug": "zerna-pshenitsy-spelty-farro-perlato-optom",
@@ -1024,7 +1024,7 @@
      "format": "1 кг",
      "desc_ru": "Крупа пшеничная спельта от производителя Luzi — это натуральный продукт, богатый питательными свойствами, широко применяемый на кухне. Спельта — злак древнего происхождения с низким содержанием калорий, богатый клетчаткой и, следовательно, с высоким потенциалом насыщения. Используйте его, чтобы обогатить теплые традиционные супы или приготовить салаты из сезонных овощей и множество других творческих и полезных блюд.",
      "page": 35,
-     "image": "images/catalog/farro/zerna-pshenitsy-spelty-farro-perlato-optom-grains.jpg",
+     "image": "images/catalog/farro/zerna-pshenitsy-spelty-farro-perlato-optom-spelt.jpg",
      "image_width": 1086,
      "desc_it": "Il farro perlato di Luzi è un prodotto naturale e ricco di proprietà nutritive, molto versatile in cucina. Il farro è un cereale dalle antiche origini con un basso contenuto calorico, ricco di fibre e quindi con un alto potenziale saziante. Provalo per arrichire calde zuppe della tradizione, oppure per preparare insalate con verdure di stagione e tanti altri piatti fantasiosi e ricchi di benessere."
     }
@@ -1038,7 +1038,7 @@
    "name_it": "Brodi",
    "order": 9,
    "cover": "images/categories/smesi-dlya-bulonov.jpg",
-   "tile_cover": "images/categories/smesi-dlya-bulonov-tile.jpg",
+   "tile_cover": "images/categories/smesi-dlya-bulonov-studio-tile.jpg",
    "products": [
     {
      "slug": "smes-dlya-prigotovleniya-bulona-iz-belykh-gribov-optom",
